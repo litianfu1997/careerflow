@@ -1,48 +1,49 @@
 # CareerFlow
 
-Resume management platform with AI Agent integration, built with Next.js App Router.
+简历管理系统，集成了AI Agent功能，基于Next.js App Router构建。
 
-## Tech Stack
+## 技术栈
 
-- **Framework**: Next.js 15 (App Router, TypeScript)
-- **Database**: PostgreSQL + Prisma ORM
-- **Auth**: JWT + bcrypt, httpOnly cookie, 7-day expiry
+- **框架**: Next.js 15 (App Router, TypeScript)
+- **数据库**: PostgreSQL + Prisma ORM
+- **认证**: JWT + bcrypt, httpOnly cookie, 7天过期
 - **UI**: Tailwind CSS
-- **Forms**: React Hook Form + Zod
-- **PDF**: Playwright headless browser
-- **Export**: JSON / Markdown / PDF
-- **Agent API**: REST + Bearer API Key auth
-- **MCP**: TypeScript MCP Server (calls REST API)
-- **Deploy**: Docker Compose (app + postgres)
+- **表单**: React Hook Form + Zod
+- **PDF**: Playwright 无头浏览器
+- **导出**: JSON / Markdown / PDF
+- **Agent API**: REST + Bearer API Key 认证
+- **MCP**: TypeScript MCP Server (调用REST API)
+- **部署**: Docker Compose (应用 + PostgreSQL)
+- **国际化**: next-intl (中文/英文)
 
-## Quick Start
+## 快速开始
 
-### Prerequisites
+### 前置要求
 
 - Node.js 20+
-- PostgreSQL 16+ (or Docker)
-- Playwright browsers (for PDF export)
+- PostgreSQL 16+ (或 Docker)
+- Playwright 浏览器 (PDF导出)
 
-### Setup
+### 安装
 
 ```bash
-# 1. Install dependencies
+# 1. 安装依赖
 npm install
 
-# 2. Configure environment
+# 2. 配置环境变量
 cp .env.example .env
-# Edit .env with your values
+# 编辑 .env 文件设置你的值
 
-# 3. Setup database
+# 3. 设置数据库
 npx prisma migrate dev --name init
 
-# 4. Seed templates
+# 4. 种子模板数据
 npm run db:seed
 
-# 5. Install Playwright browsers (for PDF export)
+# 5. 安装 Playwright 浏览器 (PDF导出)
 npx playwright install chromium
 
-# 6. Start dev server
+# 6. 启动开发服务器
 npm run dev
 ```
 
@@ -54,118 +55,156 @@ npx prisma migrate deploy
 npm run db:seed
 ```
 
-## Project Structure
+## 项目架构
+
+CareerFlow 是一个简历管理平台，具有AI Agent集成。Next.js 15 App Router + TypeScript + PostgreSQL (Prisma) + JWT认证。
+
+### 两个API层
+
+- **内部API** (`app/api/`): 标准的Web UI CRUD。Cookie-based JWT认证通过 `lib/auth.ts`。
+- **Agent API** (`app/api/agent/`): 25个REST端点供外部AI agents使用。Bearer token认证通过API密钥，具有范围权限 (`lib/agent-auth.ts`, `lib/permissions.ts`)。
+
+### Patch系统 (关键创新)
+
+Agents不能直接修改简历，而是创建JSON Patch操作 (RFC 6902) 存储为 `ResumePatch` 记录，状态为 `pending_review`。Patches经过: `pending_review` → `applied` | `rejected` | `expired`。应用patch会自动创建 `ResumeVersion` 快照。引擎在 `lib/patches.ts`。
+
+### 模板和渲染管道
+
+- 3个内置模板通过 `db:seed` 种子: `clean-cn`, `tech-cn`, `ats-en`
+- 用户可以创建自定义模板使用HTML/CSS
+- `lib/resume-renderer.ts` 使用模板 + 变量替换渲染简历JSON → HTML (`{{variable}}` 语法通过 `lib/template-variables.ts`)
+- `lib/pdf.ts` 使用Playwright无头浏览器转换渲染HTML → PDF
+
+### 国际化
+
+`next-intl` 使用locale-based路由 (`/en/...`, `/zh/...`)。配置在 `i18n/routing.ts`，翻译在 `messages/en.json` 和 `messages/zh.json`。中间件在 `middleware.ts` 也处理JWT认证检查和受保护路由重定向。
+
+## 项目结构
 
 ```
 app/
-├── login/                   # Login page
-├── register/                # Register page
-├── (protected)/
-│   ├── dashboard/           # Dashboard
-│   ├── resumes/             # Resume CRUD, editor, preview, patches
-│   ├── settings/agent/      # API Key management
-│   └── admin/               # Admin dashboard
+├── [locale]/
+│   ├── layout.tsx           # 国际化布局
+│   ├── page.tsx             # 首页
+│   ├── login/               # 登录页面
+│   ├── register/            # 注册页面
+│   └── (protected)/
+│       ├── layout.tsx       # 受保护路由布局
+│       ├── dashboard/       # 仪表板
+│       ├── resumes/         # 简历CRUD、编辑器、预览、补丁
+│       ├── settings/agent/  # API密钥管理
+│       ├── templates/       # 模板管理
+│       └── admin/           # 管理员仪表板
 ├── api/
-│   ├── auth/                # Register, login, logout, me
-│   ├── resumes/             # CRUD + duplicate + template + export + import + patches
-│   ├── templates/           # Template list/detail
-│   ├── render-preview/      # Preview rendering
-│   ├── settings/api-keys/   # API Key management
-│   ├── agent/               # Agent REST API (25 endpoints)
-│   └── admin/               # Admin API
+│   ├── auth/                # 注册、登录、登出、me
+│   ├── resumes/             # CRUD + 复制 + 模板 + 导出 + 导入 + 补丁
+│   ├── templates/           # 模板列表/详情
+│   ├── render-preview/      # 预览渲染
+│   ├── settings/api-keys/   # API密钥管理
+│   ├── agent/               # Agent REST API (25个端点)
+│   └── admin/               # 管理员API
 lib/
-├── auth.ts                  # JWT sign/verify, cookie, bcrypt
-├── prisma.ts                # Prisma client singleton
-├── api-key.ts               # Key generation, hash, validation
-├── permissions.ts           # Scope validation
-├── agent-auth.ts            # Agent authentication middleware
-├── audit.ts                 # Audit log
-├── patches.ts               # Patch application engine
-├── resume-schema.ts         # Zod schema + TypeScript types
-├── resume-renderer.ts       # HTML rendering engine + 3 templates
-├── markdown.ts              # Markdown renderer
-├── pdf.ts                   # Playwright PDF generation
-└── utils.ts                 # cn() utility
+├── auth.ts                  # JWT签名/验证、cookie、bcrypt
+├── prisma.ts                # Prisma客户端单例
+├── api-key.ts               # 密钥生成、哈希、验证
+├── permissions.ts           # 范围验证
+├── agent-auth.ts            # Agent认证中间件
+├── audit.ts                 # 审计日志
+├── patches.ts               # 补丁应用引擎
+├── resume-schema.ts         # Zod模式 + TypeScript类型
+├── resume-renderer.ts       # HTML渲染引擎 + 3个模板
+├── markdown.ts              # Markdown渲染器
+├── pdf.ts                   # Playwright PDF生成
+├── template-variables.ts    # 模板变量替换
+└── utils.ts                 # cn() 工具函数
 prisma/
-└── schema.prisma            # 8 models
+├── schema.prisma            # 8个模型
+└── seed.ts                  # 种子数据
 mcp/
-└── server.ts                # MCP Server
+└── server.ts                # MCP服务器
+components/
+├── ui/                      # UI组件 (shadcn/ui)
+├── loading-overlay.tsx      # 加载覆盖层
+├── loading-page.tsx         # 加载页面
+├── loading-spinner.tsx      # 加载旋转器
+└── ...
 ```
 
-## Built-in Templates
+## 内置模板
 
-| Name | Description |
-|------|-------------|
-| `clean-cn` | Chinese clean single-column |
-| `tech-cn` | Chinese tech-focused (blue accent) |
+| 名称 | 描述 |
+|------|------|
+| `clean-cn` | 中文简洁单列 |
+| `tech-cn` | 中文技术导向 (蓝色强调) |
+| `ats-en` | 英文ATS友好 (极简)
 | `ats-en` | English ATS-friendly (minimal) |
 
 ## Agent API
 
-### Authentication
+### 认证
 
-All Agent API endpoints use Bearer token authentication:
+所有Agent API端点使用Bearer token认证:
 
 ```bash
 curl -H "Authorization: Bearer cf_live_xxx" http://localhost:3000/api/agent/me
 ```
 
-### Scopes
+### 权限范围
 
-| Scope | Description | Default |
-|-------|-------------|---------|
-| `resume:read` | Read resumes | Yes |
-| `resume:write_patch` | Submit patches | Yes |
-| `resume:export` | Export resumes | Yes |
-| `resume:version` | View version history | Yes |
-| `resume:apply_patch` | Apply patches directly | No (dangerous) |
-| `resume:delete` | Delete resumes | No (dangerous) |
-| `profile:write` | Modify user profile | No (dangerous) |
+| 范围 | 描述 | 默认 |
+|------|------|------|
+| `resume:read` | 读取简历 | 是 |
+| `resume:write_patch` | 提交补丁 | 是 |
+| `resume:export` | 导出简历 | 是 |
+| `resume:version` | 查看版本历史 | 是 |
+| `resume:apply_patch` | 直接应用补丁 | 否 (危险) |
+| `resume:delete` | 删除简历 | 否 (危险) |
+| `profile:write` | 修改用户资料 | 否 (危险) |
 
-### Endpoints
+### 端点
 
-| Method | Path | Scope | Description |
-|--------|------|-------|-------------|
-| GET | `/api/agent/me` | - | Get identity |
-| GET | `/api/agent/resumes` | `resume:read` | List resumes |
-| GET | `/api/agent/resumes/:id` | `resume:read` | Get resume |
-| GET | `/api/agent/resumes/:id/sections` | `resume:read` | Get all sections |
-| GET | `/api/agent/resumes/:id/sections/:key` | `resume:read` | Get one section |
-| POST | `/api/agent/resumes/:id/patches` | `resume:write_patch` | Create patch |
-| GET | `/api/agent/resumes/:id/patches` | `resume:read` | List patches |
-| GET | `/api/agent/resumes/:id/patches/:pid` | `resume:read` | Get patch |
-| POST | `/api/agent/resumes/:id/patches/:pid/apply` | `resume:apply_patch` | Apply patch |
-| POST | `/api/agent/resumes/:id/patches/:pid/reject` | `resume:write_patch` | Reject patch |
-| POST | `/api/agent/resumes/:id/clone` | `resume:read` | Clone resume |
-| GET | `/api/agent/resumes/:id/versions` | `resume:version` | List versions |
-| POST | `/api/agent/resumes/:id/versions/:vid/restore` | `resume:apply_patch` | Restore version |
-| GET | `/api/agent/resumes/:id/export/markdown` | `resume:export` | Export Markdown |
-| GET | `/api/agent/resumes/:id/export/json` | `resume:export` | Export JSON |
-| POST | `/api/agent/resumes/:id/export/pdf` | `resume:export` | Export PDF |
+| 方法 | 路径 | 范围 | 描述 |
+|------|------|------|------|
+| GET | `/api/agent/me` | - | 获取身份 |
+| GET | `/api/agent/resumes` | `resume:read` | 列出简历 |
+| GET | `/api/agent/resumes/:id` | `resume:read` | 获取简历 |
+| GET | `/api/agent/resumes/:id/sections` | `resume:read` | 获取所有部分 |
+| GET | `/api/agent/resumes/:id/sections/:key` | `resume:read` | 获取一个部分 |
+| POST | `/api/agent/resumes/:id/patches` | `resume:write_patch` | 创建补丁 |
+| GET | `/api/agent/resumes/:id/patches` | `resume:read` | 列出补丁 |
+| GET | `/api/agent/resumes/:id/patches/:pid` | `resume:read` | 获取补丁 |
+| POST | `/api/agent/resumes/:id/patches/:pid/apply` | `resume:apply_patch` | 应用补丁 |
+| POST | `/api/agent/resumes/:id/patches/:pid/reject` | `resume:write_patch` | 拒绝补丁 |
+| POST | `/api/agent/resumes/:id/clone` | `resume:read` | 克隆简历 |
+| GET | `/api/agent/resumes/:id/versions` | `resume:version` | 列出版本 |
+| POST | `/api/agent/resumes/:id/versions/:vid/restore` | `resume:apply_patch` | 恢复版本 |
+| GET | `/api/agent/resumes/:id/export/markdown` | `resume:export` | 导出Markdown |
+| GET | `/api/agent/resumes/:id/export/json` | `resume:export` | 导出JSON |
+| POST | `/api/agent/resumes/:id/export/pdf` | `resume:export` | 导出PDF |
 
-### Patch Format
+### 补丁格式
 
-Patches use JSON Pointer operations:
+补丁使用JSON Pointer操作:
 
 ```json
 [
-  { "op": "replace", "path": "/basic/name", "value": "New Name" },
+  { "op": "replace", "path": "/basic/name", "value": "新名字" },
   { "op": "add", "path": "/skills/-", "value": { "id": "x", "name": "DevOps", "skills": ["Docker"] } },
   { "op": "remove", "path": "/education/0" }
 ]
 ```
 
-### Patch Lifecycle
+### 补丁生命周期
 
 `pending_review` → `applied` | `rejected` | `expired`
 
-## MCP Server
+## MCP服务器
 
-The MCP server allows AI assistants to interact with resumes through the Agent API.
+MCP服务器允许AI助手通过Agent API与简历交互。
 
-### Configuration
+### 配置
 
-Add to your MCP client config:
+添加到你的MCP客户端配置:
 
 ```json
 {
@@ -182,42 +221,47 @@ Add to your MCP client config:
 }
 ```
 
-### Available Tools
+### 可用工具
 
-- `list_resumes` - List all resumes
-- `get_resume` - Get full resume details
-- `get_resume_sections` - Get all sections
-- `get_resume_section` - Get a specific section
-- `propose_resume_patch` - Propose a patch
-- `apply_resume_patch` - Apply a pending patch
-- `list_patches` - List patches
-- `clone_resume` - Clone a resume
-- `list_versions` - View version history
-- `export_resume_markdown` - Export as Markdown
-- `export_resume_json` - Export as JSON
+- `list_resumes` - 列出所有简历
+- `get_resume` - 获取完整简历详情
+- `get_resume_sections` - 获取所有部分
+- `get_resume_section` - 获取特定部分
+- `propose_resume_patch` - 提出补丁
+- `apply_resume_patch` - 应用待处理补丁
+- `list_patches` - 列出补丁
+- `clone_resume` - 克隆简历
+- `list_versions` - 查看版本历史
+- `export_resume_markdown` - 导出为Markdown
+- `export_resume_json` - 导出为JSON
 
-## Security
+## 安全性
 
-1. Users can only access their own data
-2. API Keys stored as SHA-256 hashes
-3. API Key plaintext shown only once
-4. Agent cannot directly overwrite resumes (uses patch system)
-5. Patch application requires version save
-6. All Agent operations logged in audit trail
-7. Dangerous scopes (`resume:apply_patch`, `resume:delete`, `profile:write`) not granted by default
-8. PDF export isolated per-user
-9. JSON import validated with Zod schema
+1. 用户只能访问自己的数据
+2. API密钥存储为SHA-256哈希
+3. API密钥明文仅显示一次
+4. Agent不能直接覆盖简历 (使用补丁系统)
+5. 补丁应用需要保存版本
+6. 所有Agent操作记录在审计日志中
+7. 危险范围 (`resume:apply_patch`, `resume:delete`, `profile:write`) 默认不授予
+8. PDF导出按用户隔离
+9. JSON导入使用Zod模式验证
 
-## Environment Variables
+## 环境变量
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `DATABASE_URL` | Yes | PostgreSQL connection string |
-| `JWT_SECRET` | Yes | Secret for JWT signing |
-| `APP_URL` | Yes | Public app URL |
-| `API_KEY_SECRET` | Yes | Secret for API key hashing |
-| `STORAGE_DIR` | No | File storage directory (default: `./storage`) |
+| 变量 | 必需 | 描述 |
+|------|------|------|
+| `DATABASE_URL` | 是 | PostgreSQL连接字符串 |
+| `JWT_SECRET` | 是 | JWT签名密钥 |
+| `APP_URL` | 是 | 公共应用URL |
+| `API_KEY_SECRET` | 是 | API密钥哈希密钥 |
+| `STORAGE_DIR` | 否 | 文件存储目录 (默认: `./storage`) |
 
-## License
+## 测试账号
+
+- **邮箱**: demo@careerflow.com
+- **密码**: Demo1234!
+
+## 许可证
 
 MIT
