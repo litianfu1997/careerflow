@@ -1,0 +1,306 @@
+{
+  "metadata": {
+    "title": "CareerFlow - 简历管理器",
+    "description": "使用 AI 智能体管理您的简历"
+  },
+  "landing": {
+    "title": "CareerFlow",
+    "subtitle": "使用 AI 智能体管理您的简历",
+    "heroSubtitle": "智能简历管理平台，让 AI 帮您打造完美简历，轻松应对每一次求职",
+    "login": "登录",
+    "register": "免费注册",
+    "features": {
+      "title": "核心功能",
+      "subtitle": "强大而优雅的简历管理工具，助您在求职中脱颖而出",
+      "ai": {
+        "title": "AI 智能优化",
+        "desc": "自动分析职位描述，智能优化简历内容，匹配度显著提升"
+      },
+      "templates": {
+        "title": "专业模板",
+        "desc": "多款 ATS 友好模板，由行业专家精心设计，一键切换风格"
+      },
+      "security": {
+        "title": "安全可靠",
+        "desc": "数据加密存储，API 密钥精细权限控制，隐私安全无忧"
+      }
+    },
+    "howItWorks": {
+      "title": "三步搞定",
+      "subtitle": "简单直观的操作流程，几分钟内即可完成简历优化",
+      "step1": {
+        "title": "创建简历",
+        "desc": "填写基本信息，或从现有简历快速导入"
+      },
+      "step2": {
+        "title": "AI 优化",
+        "desc": "AI 智能体自动分析职位需求并优化简历内容"
+      },
+      "step3": {
+        "title": "导出使用",
+        "desc": "一键导出高清 PDF，或通过 API 集成到您的工具链"
+      }
+    },
+    "stats": {
+      "title": "深受用户信赖",
+      "subtitle": "全球职场人士的选择",
+      "templates": "专业模板",
+      "exports": "简历已导出",
+      "patches": "AI 优化建议",
+      "users": "活跃用户"
+    },
+    "cta": {
+      "title": "准备好打造您的完美简历了吗？",
+      "button": "立即免费开始"
+    }
+  },
+  "auth": {
+    "signInTitle": "登录 CareerFlow",
+    "email": "邮箱",
+    "password": "密码",
+    "signIn": "登录",
+    "signingIn": "正在登录...",
+    "noAccount": "还没有账户？",
+    "registerLink": "注册",
+    "loginFailed": "登录失败",
+    "networkError": "网络错误",
+    "registerTitle": "创建您的账户",
+    "nickname": "昵称（可选）",
+    "confirmPassword": "确认密码",
+    "createAccount": "创建账户",
+    "creatingAccount": "正在创建...",
+    "hasAccount": "已有账户？",
+    "signInLink": "登录",
+    "registrationFailed": "注册失败"
+  },
+  "header": {
+    "dashboard": "控制台",
+    "resumes": "简历",
+    "templates": "模板",
+    "apiKeys": "API 密钥",
+    "admin": "管理",
+    "logout": "退出",
+    "signIn": "登录",
+    "register": "注册"
+  },
+  "dashboard": {
+    "title": "控制台",
+    "newResume": "新建简历",
+    "totalResumes": "简历总数",
+    "drafts": "草稿",
+    "published": "已发布",
+    "recentResumes": "最近简历",
+    "loading": "加载中...",
+    "noResumes": "暂无简历。",
+    "createOne": "创建一个"
+  },
+  "resumes": {
+    "title": "我的简历",
+    "newResume": "新建简历",
+    "loading": "加载中...",
+    "noResumes": "暂无简历。",
+    "createFirst": "创建您的第一份简历",
+    "updated": "更新于",
+    "duplicate": "复制",
+    "preview": "预览",
+    "delete": "删除",
+    "confirmDelete": "确定删除这份简历吗？"
+  },
+  "newResume": {
+    "title": "创建新简历",
+    "resumeTitle": "简历标题",
+    "placeholder": "例如：我的软件工程师简历",
+    "create": "创建简历",
+    "creating": "创建中...",
+    "untitled": "未命名简历"
+  },
+  "editor": {
+    "sections": {
+      "basic": "个人信息",
+      "summary": "个人简介",
+      "education": "教育经历",
+      "workExperience": "工作经历",
+      "projects": "项目经历",
+      "skills": "技能",
+      "certificates": "证书",
+      "openSource": "开源项目",
+      "customSections": "自定义模块"
+    },
+    "saving": "保存中...",
+    "unsaved": "未保存",
+    "saved": "已保存",
+    "saveNow": "立即保存",
+    "fullPreview": "完整预览",
+    "loading": "加载中...",
+    "add": "添加",
+    "addCategory": "添加分类",
+    "up": "上移",
+    "down": "下移",
+    "delete": "删除",
+    "fields": {
+      "name": "姓名",
+      "email": "邮箱",
+      "phone": "电话",
+      "location": "所在地",
+      "website": "网站",
+      "github": "GitHub",
+      "linkedin": "LinkedIn",
+      "school": "学校",
+      "degree": "学位",
+      "major": "专业",
+      "startDate": "开始日期",
+      "endDate": "结束日期",
+      "gpa": "GPA",
+      "description": "描述",
+      "company": "公司",
+      "position": "职位",
+      "highlights": "亮点（每行一条）",
+      "role": "角色",
+      "url": "链接",
+      "categoryName": "分类名称",
+      "skillsPlaceholder": "技能（逗号分隔）",
+      "issuer": "颁发机构",
+      "date": "日期",
+      "title": "标题",
+      "content": "内容",
+      "newEntry": "新条目",
+      "newProject": "新项目",
+      "newCategory": "新分类",
+      "newCertificate": "新证书",
+      "newSection": "新模块"
+    },
+    "certificatesTitle": "证书与荣誉"
+  },
+  "patches": {
+    "title": "补丁",
+    "backToEditor": "返回编辑器",
+    "noPatches": "暂无补丁。",
+    "apply": "应用",
+    "reject": "拒绝",
+    "confirmApply": "确定应用此补丁？",
+    "confirmReject": "确定拒绝此补丁？",
+    "viewOperations": "查看补丁操作",
+    "applied": "已应用",
+    "loading": "加载中..."
+  },
+  "preview": {
+    "loadingPreview": "加载预览中..."
+  },
+  "settings": {
+    "title": "API 密钥管理",
+    "description": "创建 API 密钥，让外部智能体通过 REST API 访问您的简历。",
+    "created": "API 密钥已创建！请立即复制，之后将不再显示。",
+    "dismiss": "关闭",
+    "createNewKey": "创建新密钥",
+    "name": "名称",
+    "scopes": "权限范围",
+    "createKey": "创建密钥",
+    "creating": "创建中...",
+    "yourKeys": "您的 API 密钥",
+    "loading": "加载中...",
+    "noKeys": "暂无 API 密钥。",
+    "revoke": "撤销",
+    "confirmRevoke": "确定撤销此 API 密钥？此操作不可恢复。",
+    "lastUsed": "最后使用",
+    "created": "创建于",
+    "scopesList": {
+      "resume:read": "读取简历",
+      "resume:write_patch": "提交补丁",
+      "resume:export": "导出简历",
+      "resume:version": "查看版本",
+      "resume:apply_patch": "直接应用补丁（危险）",
+      "resume:delete": "删除简历（危险）",
+      "profile:write": "修改个人资料（危险）"
+    }
+  },
+  "admin": {
+    "title": "管理后台",
+    "loading": "加载中...",
+    "tabs": {
+      "users": "用户",
+      "resumes": "简历",
+      "templates": "模板"
+    },
+    "tableHeaders": {
+      "email": "邮箱",
+      "nickname": "昵称",
+      "role": "角色",
+      "created": "创建时间",
+      "title": "标题",
+      "status": "状态",
+      "updated": "更新时间",
+      "name": "名称",
+      "displayName": "显示名称",
+      "builtIn": "内置",
+      "description": "描述"
+    },
+    "yes": "是",
+    "no": "否"
+  },
+  "languageSwitcher": {
+    "en": "EN",
+    "zh": "中文"
+  },
+  "footer": {
+    "allRightsReserved": "版权所有。",
+    "privacy": "隐私政策",
+    "terms": "服务条款"
+  },
+  "templates": {
+    "title": "简历模板",
+    "description": "浏览和管理您的简历模板",
+    "createNew": "创建模板",
+    "builtin": "内置",
+    "custom": "自定义",
+    "editTemplate": "编辑",
+    "deleteTemplate": "删除",
+    "confirmDelete": "确定删除此模板？使用此模板的简历将保持当前布局。",
+    "previewTemplate": "预览",
+    "noTemplates": "暂无自定义模板。",
+    "createFirst": "创建您的第一个模板",
+    "loading": "加载中...",
+    "editor": {
+      "title": "模板编辑器",
+      "name": "标识符",
+      "namePlaceholder": "例如：my-custom-template",
+      "nameHint": "仅限小写字母、数字和连字符",
+      "displayName": "显示名称",
+      "displayNamePlaceholder": "例如：我的自定义模板",
+      "description": "描述",
+      "htmlCode": "HTML 模板",
+      "htmlPlaceholder": "在此编写 HTML 模板，使用 {{header}}、{{education}} 等变量",
+      "cssCode": "自定义 CSS（可选）",
+      "cssPlaceholder": "可选的 CSS 样式",
+      "variableReference": "变量参考",
+      "availableVariables": "可用变量",
+      "variableHint": "在 HTML 中使用 {{变量名}} 来插入简历模块。",
+      "livePreview": "实时预览",
+      "save": "保存模板",
+      "saving": "保存中...",
+      "create": "创建模板",
+      "creating": "创建中...",
+      "loadError": "加载模板失败",
+      "saveError": "保存模板失败",
+      "nameExists": "模板标识符已存在"
+    },
+    "variables": {
+      "header": "联系信息区块",
+      "summary": "个人简介",
+      "education": "教育经历",
+      "workExperience": "工作经历",
+      "projects": "项目经历",
+      "skills": "技能",
+      "certificates": "证书",
+      "openSource": "开源项目",
+      "customSections": "自定义模块",
+      "fullName": "姓名（纯文本）",
+      "email": "邮箱（纯文本）",
+      "phone": "电话（纯文本）"
+    },
+    "picker": {
+      "label": "模板",
+      "changeTemplate": "更换模板",
+      "manageTemplates": "管理模板..."
+    }
+  }
+}

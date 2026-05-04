@@ -1,0 +1,306 @@
+{
+  "metadata": {
+    "title": "CareerFlow - Resume Manager",
+    "description": "Manage your resumes with AI-powered agents"
+  },
+  "landing": {
+    "title": "CareerFlow",
+    "subtitle": "Manage your resumes with AI-powered agents",
+    "heroSubtitle": "Smart resume management platform — let AI craft your perfect resume for every job application",
+    "login": "Login",
+    "register": "Get Started Free",
+    "features": {
+      "title": "Core Features",
+      "subtitle": "Powerful and elegant tools to help you stand out in your job search",
+      "ai": {
+        "title": "AI Optimization",
+        "desc": "Automatically analyze job descriptions and optimize resume content for better matching"
+      },
+      "templates": {
+        "title": "Professional Templates",
+        "desc": "Multiple ATS-friendly templates designed by industry experts — switch styles with one click"
+      },
+      "security": {
+        "title": "Secure & Private",
+        "desc": "Data encrypted at rest, fine-grained API key permissions — your privacy matters"
+      }
+    },
+    "howItWorks": {
+      "title": "Three Easy Steps",
+      "subtitle": "A simple and intuitive workflow — optimize your resume in minutes",
+      "step1": {
+        "title": "Create Resume",
+        "desc": "Fill in your details or quickly import from an existing resume"
+      },
+      "step2": {
+        "title": "AI Optimization",
+        "desc": "AI agents automatically analyze job requirements and optimize your resume"
+      },
+      "step3": {
+        "title": "Export & Use",
+        "desc": "Export as high-quality PDF, or integrate via API into your toolchain"
+      }
+    },
+    "stats": {
+      "title": "Trusted by Professionals",
+      "subtitle": "The choice of job seekers worldwide",
+      "templates": "Professional Templates",
+      "exports": "Resumes Exported",
+      "patches": "AI Suggestions",
+      "users": "Active Users"
+    },
+    "cta": {
+      "title": "Ready to build your perfect resume?",
+      "button": "Get Started Free"
+    }
+  },
+  "auth": {
+    "signInTitle": "Sign in to CareerFlow",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "signingIn": "Signing in...",
+    "noAccount": "Don't have an account?",
+    "registerLink": "Register",
+    "loginFailed": "Login failed",
+    "networkError": "Network error",
+    "registerTitle": "Create your account",
+    "nickname": "Nickname (optional)",
+    "confirmPassword": "Confirm password",
+    "createAccount": "Create account",
+    "creatingAccount": "Creating account...",
+    "hasAccount": "Already have an account?",
+    "signInLink": "Sign in",
+    "registrationFailed": "Registration failed"
+  },
+  "header": {
+    "dashboard": "Dashboard",
+    "resumes": "Resumes",
+    "templates": "Templates",
+    "apiKeys": "API Keys",
+    "admin": "Admin",
+    "logout": "Logout",
+    "signIn": "Sign in",
+    "register": "Register"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "newResume": "New Resume",
+    "totalResumes": "Total resumes",
+    "drafts": "Drafts",
+    "published": "Published",
+    "recentResumes": "Recent resumes",
+    "loading": "Loading...",
+    "noResumes": "No resumes yet.",
+    "createOne": "Create one"
+  },
+  "resumes": {
+    "title": "My Resumes",
+    "newResume": "New Resume",
+    "loading": "Loading...",
+    "noResumes": "No resumes yet.",
+    "createFirst": "Create your first resume",
+    "updated": "Updated",
+    "duplicate": "Duplicate",
+    "preview": "Preview",
+    "delete": "Delete",
+    "confirmDelete": "Delete this resume?"
+  },
+  "newResume": {
+    "title": "Create New Resume",
+    "resumeTitle": "Resume title",
+    "placeholder": "e.g. My Software Engineer Resume",
+    "create": "Create Resume",
+    "creating": "Creating...",
+    "untitled": "Untitled Resume"
+  },
+  "editor": {
+    "sections": {
+      "basic": "Personal Info",
+      "summary": "Summary",
+      "education": "Education",
+      "workExperience": "Work Experience",
+      "projects": "Projects",
+      "skills": "Skills",
+      "certificates": "Certificates",
+      "openSource": "Open Source",
+      "customSections": "Custom Sections"
+    },
+    "saving": "Saving...",
+    "unsaved": "Unsaved",
+    "saved": "Saved",
+    "saveNow": "Save now",
+    "fullPreview": "Full Preview",
+    "loading": "Loading...",
+    "add": "Add",
+    "addCategory": "Add Category",
+    "up": "Up",
+    "down": "Down",
+    "delete": "Delete",
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "location": "Location",
+      "website": "Website",
+      "github": "GitHub",
+      "linkedin": "LinkedIn",
+      "school": "School",
+      "degree": "Degree",
+      "major": "Major",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "gpa": "GPA",
+      "description": "Description",
+      "company": "Company",
+      "position": "Position",
+      "highlights": "Highlights (one per line)",
+      "role": "Role",
+      "url": "URL",
+      "categoryName": "Category Name",
+      "skillsPlaceholder": "Skills (comma-separated)",
+      "issuer": "Issuer",
+      "date": "Date",
+      "title": "Title",
+      "content": "Content",
+      "newEntry": "New Entry",
+      "newProject": "New Project",
+      "newCategory": "New Category",
+      "newCertificate": "New Certificate",
+      "newSection": "New Section"
+    },
+    "certificatesTitle": "Certificates & Awards"
+  },
+  "patches": {
+    "title": "Patches",
+    "backToEditor": "Back to editor",
+    "noPatches": "No patches yet.",
+    "apply": "Apply",
+    "reject": "Reject",
+    "confirmApply": "Apply this patch?",
+    "confirmReject": "Reject this patch?",
+    "viewOperations": "View patch operations",
+    "applied": "Applied",
+    "loading": "Loading..."
+  },
+  "preview": {
+    "loadingPreview": "Loading preview..."
+  },
+  "settings": {
+    "title": "API Key Management",
+    "description": "Create API keys for external agents to access your resumes via REST API.",
+    "created": "API Key created! Copy it now - it won't be shown again.",
+    "dismiss": "Dismiss",
+    "createNewKey": "Create New Key",
+    "name": "Name",
+    "scopes": "Scopes",
+    "createKey": "Create Key",
+    "creating": "Creating...",
+    "yourKeys": "Your API Keys",
+    "loading": "Loading...",
+    "noKeys": "No API keys yet.",
+    "revoke": "Revoke",
+    "confirmRevoke": "Revoke this API key? This cannot be undone.",
+    "lastUsed": "Last used",
+    "created": "Created",
+    "scopesList": {
+      "resume:read": "Read resumes",
+      "resume:write_patch": "Submit patches",
+      "resume:export": "Export resumes",
+      "resume:version": "View versions",
+      "resume:apply_patch": "Apply patches directly (dangerous)",
+      "resume:delete": "Delete resumes (dangerous)",
+      "profile:write": "Modify profile (dangerous)"
+    }
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "loading": "Loading...",
+    "tabs": {
+      "users": "Users",
+      "resumes": "Resumes",
+      "templates": "Templates"
+    },
+    "tableHeaders": {
+      "email": "Email",
+      "nickname": "Nickname",
+      "role": "Role",
+      "created": "Created",
+      "title": "Title",
+      "status": "Status",
+      "updated": "Updated",
+      "name": "Name",
+      "displayName": "Display Name",
+      "builtIn": "Built-in",
+      "description": "Description"
+    },
+    "yes": "Yes",
+    "no": "No"
+  },
+  "languageSwitcher": {
+    "en": "EN",
+    "zh": "中文"
+  },
+  "footer": {
+    "allRightsReserved": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
+  "templates": {
+    "title": "Resume Templates",
+    "description": "Browse and manage your resume templates",
+    "createNew": "Create Template",
+    "builtin": "Built-in",
+    "custom": "Custom",
+    "editTemplate": "Edit",
+    "deleteTemplate": "Delete",
+    "confirmDelete": "Delete this template? Resumes using it will keep their current layout.",
+    "previewTemplate": "Preview",
+    "noTemplates": "No custom templates yet.",
+    "createFirst": "Create your first template",
+    "loading": "Loading...",
+    "editor": {
+      "title": "Template Editor",
+      "name": "Identifier",
+      "namePlaceholder": "e.g. my-custom-template",
+      "nameHint": "Lowercase letters, numbers, and hyphens only",
+      "displayName": "Display Name",
+      "displayNamePlaceholder": "e.g. My Custom Template",
+      "description": "Description",
+      "htmlCode": "HTML Template",
+      "htmlPlaceholder": "Write your HTML template here. Use {{header}}, {{education}}, etc.",
+      "cssCode": "Custom CSS (optional)",
+      "cssPlaceholder": "Optional CSS to customize the page style",
+      "variableReference": "Variable Reference",
+      "availableVariables": "Available variables",
+      "variableHint": "Use {{variableName}} in your HTML to insert resume sections.",
+      "livePreview": "Live Preview",
+      "save": "Save Template",
+      "saving": "Saving...",
+      "create": "Create Template",
+      "creating": "Creating...",
+      "loadError": "Failed to load template",
+      "saveError": "Failed to save template",
+      "nameExists": "Template name already exists"
+    },
+    "variables": {
+      "header": "Contact header block",
+      "summary": "Professional summary",
+      "education": "Education section",
+      "workExperience": "Work experience section",
+      "projects": "Projects section",
+      "skills": "Skills section",
+      "certificates": "Certificates section",
+      "openSource": "Open source section",
+      "customSections": "Custom sections",
+      "fullName": "Full name (plain text)",
+      "email": "Email (plain text)",
+      "phone": "Phone (plain text)"
+    },
+    "picker": {
+      "label": "Template",
+      "changeTemplate": "Change template",
+      "manageTemplates": "Manage templates..."
+    }
+  }
+}
