@@ -35,10 +35,13 @@ export async function POST(
       resource: `resume/${id}`,
     });
 
-    return new Response(new Uint8Array(pdf), {
+    const safeFilename = Buffer.from(resume.title, "utf-8").toString("ascii").replace(/[^\x20-\x7e]/g, "_").substring(0, 100);
+
+    return new NextResponse(new Uint8Array(pdf), {
+      status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${resume.title}.pdf"`,
+        "Content-Disposition": `attachment; filename="${safeFilename}.pdf"`,
       },
     });
   } catch (err) {

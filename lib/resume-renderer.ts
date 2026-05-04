@@ -57,7 +57,19 @@ export function renderCustomTemplate(content: ResumeContent, templateHtml: strin
   const rendered = templateHtml.replace(/\{\{(\w+)\}\}/g, (_, key: string) => sections[key] || "");
 
   const cssBlock = templateCss ? `<style>${templateCss}</style>` : "";
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:system-ui,-apple-system,sans-serif;margin:0;padding:40px 48px;color:#333;line-height:1.5;}ul{margin:0;}li{margin-bottom:2px;}</style>${cssBlock}</head><body>${rendered}</body></html>`;
+  return `<!DOCTYPE html><html><head><meta charset="utf-8">
+<style>
+  @page { size: A4; margin: 0; orphans: 3; widows: 3; }
+  * { box-sizing: border-box; }
+  html, body { width: 210mm; padding: 0; margin: 0 auto; }
+  body { font-family: system-ui, -apple-system, sans-serif; padding: 40px 48px; color: #333; line-height: 1.5; background: white; }
+  h1, h2, h3 { page-break-after: avoid; }
+  body > div { page-break-inside: avoid; }
+  body > div > div { page-break-inside: avoid; }
+  ul, ol { page-break-inside: avoid; }
+  li { page-break-inside: avoid; }
+  @media print { html, body { width: auto; overflow: visible; margin: 0; padding: 0; } @page { size: A4; margin: 10mm; } body { padding: 10mm; } }
+</style>${cssBlock}</head><body>${rendered}</body></html>`;
 }
 
 function cleanCnTemplate(c: ResumeContent): string {
@@ -81,21 +93,21 @@ function cleanCnTemplate(c: ResumeContent): string {
 
   if (c.education.length) {
     const items = c.education.map((e) => `
-      <div style="margin-bottom:8px;">
+      ${itemDiv(`
         <div style="display:flex;justify-content:space-between;">
           <strong>${esc(e.school)}</strong>
           <span style="color:#666;font-size:12px;">${esc(e.startDate)} - ${esc(e.endDate)}</span>
         </div>
         <p style="margin:2px 0 0;font-size:13px;">${esc(e.degree)} ${esc(e.major)} ${e.gpa ? "· GPA: " + esc(e.gpa) : ""}</p>
         ${e.description ? `<p style="margin:2px 0 0;font-size:12px;color:#555;">${esc(e.description)}</p>` : ""}
-      </div>
+      `, "8px")}
     `).join("");
     sections.push(section("Education", items));
   }
 
   if (c.workExperience.length) {
     const items = c.workExperience.map((w) => `
-      <div style="margin-bottom:10px;">
+      ${itemDiv(`
         <div style="display:flex;justify-content:space-between;">
           <strong>${esc(w.company)}</strong>
           <span style="color:#666;font-size:12px;">${esc(w.startDate)} - ${esc(w.endDate)}</span>
@@ -103,14 +115,14 @@ function cleanCnTemplate(c: ResumeContent): string {
         <p style="margin:2px 0 0;font-size:13px;font-style:italic;">${esc(w.position)}</p>
         ${w.description ? `<p style="margin:4px 0 0;font-size:12px;line-height:1.5;">${esc(w.description)}</p>` : ""}
         ${w.highlights.length ? `<ul style="margin:4px 0 0;padding-left:16px;font-size:12px;line-height:1.5;">${w.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul>` : ""}
-      </div>
+      `, "10px")}
     `).join("");
     sections.push(section("Work Experience", items));
   }
 
   if (c.projects.length) {
     const items = c.projects.map((p) => `
-      <div style="margin-bottom:8px;">
+      ${itemDiv(`
         <div style="display:flex;justify-content:space-between;">
           <strong>${esc(p.name)}</strong>
           <span style="color:#666;font-size:12px;">${esc(p.startDate)} - ${esc(p.endDate)}</span>
@@ -118,38 +130,36 @@ function cleanCnTemplate(c: ResumeContent): string {
         ${p.role ? `<p style="margin:2px 0 0;font-size:13px;font-style:italic;">${esc(p.role)}</p>` : ""}
         ${p.description ? `<p style="margin:4px 0 0;font-size:12px;line-height:1.5;">${esc(p.description)}</p>` : ""}
         ${p.highlights.length ? `<ul style="margin:4px 0 0;padding-left:16px;font-size:12px;line-height:1.5;">${p.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul>` : ""}
-      </div>
+      `, "8px")}
     `).join("");
     sections.push(section("Projects", items));
   }
 
   if (c.skills.length) {
     const items = c.skills.map((s) => `
-      <div style="margin-bottom:4px;">
-        <strong>${esc(s.name)}:</strong> <span style="font-size:13px;">${s.skills.map(esc).join(", ")}</span>
-      </div>
+      ${itemDiv(`<strong>${esc(s.name)}:</strong> <span style="font-size:13px;">${s.skills.map(esc).join(", ")}</span>`, "4px")}
     `).join("");
     sections.push(section("Skills", items));
   }
 
   if (c.certificates.length) {
     const items = c.certificates.map((cert) => `
-      <div style="margin-bottom:4px;">
+      ${itemDiv(`
         <strong>${esc(cert.name)}</strong>
         ${cert.issuer ? ` - ${esc(cert.issuer)}` : ""}
         ${cert.date ? ` (${esc(cert.date)})` : ""}
-      </div>
+      `, "4px")}
     `).join("");
     sections.push(section("Certificates & Awards", items));
   }
 
   if (c.openSource.length) {
     const items = c.openSource.map((o) => `
-      <div style="margin-bottom:4px;">
+      ${itemDiv(`
         <strong>${esc(o.name)}</strong>
         ${o.role ? ` (${esc(o.role)})` : ""}
         ${o.description ? ` - ${esc(o.description)}` : ""}
-      </div>
+      `, "4px")}
     `).join("");
     sections.push(section("Open Source", items));
   }
@@ -640,11 +650,15 @@ function sidebarTemplate(c: ResumeContent): string {
   const mainHtml = mainSections.join("");
 
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+    @page{size:A4;margin:0;}
+    *{box-sizing:border-box;}
+    html,body{width:210mm;min-height:297mm;padding:0;margin:0 auto;overflow:hidden;}
     body{font-family:system-ui,-apple-system,sans-serif;margin:0;padding:0;color:#333;line-height:1.5;}
-    .page{display:flex;min-height:100vh;}
+    .page{display:flex;min-height:297mm;}
     .sidebar{width:240px;background:${dark};padding:32px 20px;color:#fff;flex-shrink:0;}
     .main{flex:1;padding:32px 28px;background:#fff;}
     ul{margin:0;}li{margin-bottom:2px;}
+    @media print{html,body{width:auto;min-height:auto;overflow:visible;}}
   </style></head><body>
     <div class="page">
       <div class="sidebar">${sidebarHtml}</div>
@@ -750,7 +764,14 @@ function compactTemplate(c: ResumeContent): string {
     }
   });
 
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:system-ui,-apple-system,sans-serif;margin:0;padding:24px 32px;color:#111;line-height:1.4;font-size:11px;}ul{margin:0;}li{margin-bottom:1px;}</style></head><body>${sections.join("")}</body></html>`;
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+    @page{size:A4;margin:0;}
+    *{box-sizing:border-box;}
+    html,body{width:210mm;min-height:297mm;padding:0;margin:0 auto;overflow:hidden;}
+    body{font-family:system-ui,-apple-system,sans-serif;margin:0;padding:24px 32px;color:#111;line-height:1.4;font-size:11px;}
+    ul{margin:0;}li{margin-bottom:1px;}
+    @media print{html,body{width:auto;min-height:auto;overflow:visible;}}
+  </style></head><body>${sections.join("")}</body></html>`;
 }
 
 function compactSection(title: string, content: string): string {
@@ -762,15 +783,46 @@ function compactSection(title: string, content: string): string {
 
 function section(title: string, content: string, color = "#333"): string {
   return `
-    <div style="margin-bottom:14px;">
-      <h2 style="font-size:15px;font-weight:bold;margin:0 0 6px;padding-bottom:4px;border-bottom:1px solid ${color};color:${color};">${esc(title)}</h2>
+    <div style="margin-bottom:14px;page-break-inside:avoid;">
+      <h2 style="font-size:15px;font-weight:bold;margin:0 0 6px;padding-bottom:4px;border-bottom:1px solid ${color};color:${color};page-break-after:avoid;">${esc(title)}</h2>
       ${content}
     </div>
   `;
 }
 
+function itemDiv(content: string, marginBottom = "10px"): string {
+  return `<div style="margin-bottom:${marginBottom};page-break-inside:avoid;">${content}</div>`;
+}
+
 function wrapPage(body: string): string {
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:system-ui,-apple-system,sans-serif;margin:0;padding:40px 48px;color:#333;line-height:1.5;}ul{margin:0;}li{margin-bottom:2px;}</style></head><body>${body}</body></html>`;
+  return `<!DOCTYPE html><html><head><meta charset="utf-8">
+<style>
+  @page { size: A4; margin: 0; orphans: 3; widows: 3; }
+  * { box-sizing: border-box; }
+  html, body {
+    width: 210mm;
+    padding: 0;
+    margin: 0 auto;
+    font-family: system-ui, -apple-system, sans-serif;
+    color: #333;
+    line-height: 1.5;
+    background: white;
+  }
+  body { padding: 40px 48px; }
+  /* Prevent page breaks inside headings */
+  h1, h2, h3 { page-break-after: avoid; }
+  /* Prevent page breaks inside section containers */
+  body > div { page-break-inside: avoid; }
+  body > div > div { page-break-inside: avoid; }
+  /* Prevent page breaks inside list items and content blocks */
+  ul, ol { page-break-inside: avoid; }
+  li { page-break-inside: avoid; }
+  @media print {
+    html, body { width: auto; overflow: visible; margin: 0; padding: 0; }
+    @page { size: A4; margin: 10mm; }
+    body { padding: 10mm; }
+  }
+</style></head><body>${body}</body></html>`;
 }
 
 function esc(s: string | undefined | null): string {

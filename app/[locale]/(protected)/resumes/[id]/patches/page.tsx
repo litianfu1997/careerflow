@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { LoadingPage } from "@/components/loading-page";
 
 type Patch = {
   id: string;
@@ -50,7 +51,7 @@ export default function PatchesPage() {
     }
   }
 
-  if (loading) return <div className="p-8 text-center text-[var(--muted-foreground)]">{t("loading")}</div>;
+  if (loading) return <LoadingPage text={t("loading")} />;
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">

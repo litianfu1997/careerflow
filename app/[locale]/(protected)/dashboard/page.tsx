@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Plus, Clock, CheckCircle, FileEdit } from "lucide-react";
+import { LoadingPage } from "@/components/loading-page";
 
 type ResumeSummary = {
   id: string; title: string; status: string; updatedAt: string;
@@ -73,9 +74,7 @@ export default function DashboardPage() {
       <div className="space-y-4">
         <h2 className="text-xl font-semibold tracking-tight">{t("recentResumes")}</h2>
         {loading ? (
-          <div className="flex h-24 items-center justify-center rounded-[var(--radius)] border border-dashed border-[var(--border)]">
-            <p className="text-sm text-[var(--muted-foreground)]">{t("loading")}</p>
-          </div>
+          <LoadingPage text={t("loading")} />
         ) : resumes.length === 0 ? (
           <div className="flex h-32 flex-col items-center justify-center rounded-[var(--radius)] border border-dashed border-[var(--border)] text-center">
             <p className="text-sm text-[var(--muted-foreground)]">{t("noResumes")}</p>

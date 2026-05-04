@@ -27,10 +27,13 @@ export async function GET(
     data: { resumeId: id, userId: auth.userId, format: "markdown" },
   });
 
-  return new Response(md, {
+  const safeFilename = Buffer.from(resume.title, "utf-8").toString("ascii").replace(/[^\x20-\x7e]/g, "_").substring(0, 100);
+
+  return new NextResponse(md, {
+    status: 200,
     headers: {
       "Content-Type": "text/markdown; charset=utf-8",
-      "Content-Disposition": `attachment; filename="${resume.title}.md"`,
+      "Content-Disposition": `attachment; filename="${safeFilename}.md"`,
     },
   });
 }

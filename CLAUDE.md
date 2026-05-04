@@ -72,3 +72,7 @@ Required: `DATABASE_URL`, `JWT_SECRET`, `APP_URL`, `API_KEY_SECRET`. Optional: `
 
 ## 强制要求
 回答必须使用简体中文
+
+## 测试账号
+邮箱：demo@careerflow.com
+密码：Demo1234!

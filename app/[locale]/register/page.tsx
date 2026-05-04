@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -62,6 +63,7 @@ export default function RegisterPage() {
                 placeholder="name@example.com"
                 value={form.email}
                 onChange={(e) => update("email", e.target.value)}
+                autoComplete="email"
                 required
               />
             </div>
@@ -71,6 +73,8 @@ export default function RegisterPage() {
                 placeholder="Optional"
                 value={form.nickname}
                 onChange={(e) => update("nickname", e.target.value)}
+                autoComplete="nickname"
+                maxLength={50}
               />
             </div>
             <div className="space-y-1.5">
@@ -79,6 +83,7 @@ export default function RegisterPage() {
                 type="password"
                 value={form.password}
                 onChange={(e) => update("password", e.target.value)}
+                autoComplete="new-password"
                 required
                 minLength={6}
               />
@@ -89,12 +94,14 @@ export default function RegisterPage() {
                 type="password"
                 value={form.confirmPassword}
                 onChange={(e) => update("confirmPassword", e.target.value)}
+                autoComplete="new-password"
                 required
               />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full" disabled={loading}>
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {loading ? t("creatingAccount") : t("createAccount")}
             </Button>
             <p className="text-center text-sm text-[var(--muted-foreground)]">

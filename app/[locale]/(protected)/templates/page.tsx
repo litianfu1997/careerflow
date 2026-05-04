@@ -6,7 +6,8 @@ import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, Edit, Eye, Loader2, FileText, Lock } from "lucide-react";
+import { Plus, Trash2, Edit, Eye, FileText, Lock } from "lucide-react";
+import { LoadingPage } from "@/components/loading-page";
 
 type TemplateSummary = {
   id: string;
@@ -39,12 +40,7 @@ export default function TemplatesPage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <Loader2 className="mr-2 h-6 w-6 animate-spin text-[var(--muted-foreground)]" />
-        <span className="text-[var(--muted-foreground)]">{t("loading")}</span>
-      </div>
-    );
+    return <LoadingPage text={t("loading")} />;
   }
 
   const builtinTemplates = templates.filter((t) => t.isBuiltin);

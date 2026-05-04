@@ -24,10 +24,8 @@ export async function GET(
   });
 
   const content = typeof resume.contentJson === "string"
-    ? resume.contentJson
+    ? JSON.stringify(JSON.parse(resume.contentJson), null, 2)
     : JSON.stringify(resume.contentJson, null, 2);
 
-  return new Response(content, {
-    headers: { "Content-Type": "application/json" },
-  });
+  return NextResponse.json(JSON.parse(content));
 }

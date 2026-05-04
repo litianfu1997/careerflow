@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { LoadingPage } from "@/components/loading-page";
 
 type ApiKeyView = {
   id: string; name: string; keyPrefix: string; scopes: string[];
@@ -95,6 +96,8 @@ export default function AgentSettingsPage() {
             value={newKeyName}
             onChange={(e) => setNewKeyName(e.target.value)}
             placeholder="My API Key"
+            autoComplete="off"
+            maxLength={50}
             className="w-full rounded-[var(--radius)] border border-[var(--border)] px-3 py-2 text-sm outline-none focus:border-[var(--primary)]"
           />
         </div>
@@ -125,7 +128,7 @@ export default function AgentSettingsPage() {
       <div className="space-y-2">
         <h2 className="font-semibold">{t("yourKeys")}</h2>
         {loading ? (
-          <p className="text-sm text-[var(--muted-foreground)]">{t("loading")}</p>
+          <LoadingPage text={t("loading")} />
         ) : keys.length === 0 ? (
           <p className="text-sm text-[var(--muted-foreground)]">{t("noKeys")}</p>
         ) : (

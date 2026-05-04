@@ -131,6 +131,13 @@
     "saved": "已保存",
     "saveNow": "立即保存",
     "fullPreview": "完整预览",
+    "export": "导出",
+    "exportPdf": "导出 PDF",
+    "exportMarkdown": "导出 Markdown",
+    "exportJson": "导出 JSON",
+    "exporting": "导出中...",
+    "exportSuccess": "导出成功",
+    "exportFailed": "导出失败",
     "loading": "加载中...",
     "add": "添加",
     "addCategory": "添加分类",
@@ -167,9 +174,121 @@
       "newProject": "新项目",
       "newCategory": "新分类",
       "newCertificate": "新证书",
-      "newSection": "新模块"
+      "newSection": "新模块",
+      "emailPlaceholder": "name@example.com",
+      "phonePlaceholder": "+86 138-0000-0000",
+      "websitePlaceholder": "https://example.com",
+      "githubPlaceholder": "https://github.com/username",
+      "linkedinPlaceholder": "https://linkedin.com/in/username",
+      "gpaPlaceholder": "3.8/4.0",
+      "datePlaceholder": "例如：2024-01",
+      "startDatePlaceholder": "例如：2018年9月",
+      "endDatePlaceholder": "例如：2022年6月",
+      "invalidEmail": "请输入有效的邮箱地址",
+      "invalidUrl": "请输入有效的URL地址"
     },
-    "certificatesTitle": "证书与荣誉"
+    "certificatesTitle": "证书与荣誉",
+    "summaryGuide": {
+      "title": "填写指南",
+      "toggleShow": "填写指南",
+      "toggleHide": "收起指南",
+      "tips": "写作技巧",
+      "tip1": "控制在 3-5 句话，约 100-200 字",
+      "tip2": "突出你的核心优势和职业定位",
+      "tip3": "用数据量化你的成就（如「提升了30%的效率」）",
+      "tip4": "匹配目标岗位的关键词，提高 ATS 通过率",
+      "tip5": "避免使用第一人称（我），直接陈述事实",
+      "templateTitle": "示例模板",
+      "useTemplate": "使用此模板",
+      "templates": {
+        "experienced": {
+          "name": "资深工程师",
+          "content": "拥有 [years] 年 [field] 领域开发经验的资深工程师，专注于 [techStack]。曾主导多个大型项目的架构设计与落地，累计服务用户超过 [number] 万。具备优秀的团队协作与技术攻关能力，擅长将复杂业务需求转化为高性能、可扩展的技术方案。"
+        },
+        "junior": {
+          "name": "应届/初级",
+          "content": "[major] 专业毕业，具备扎实的计算机基础和良好的编程习惯。熟悉 [techStack]，在校期间参与 [count] 个项目开发，其中 [project] 获得校级优秀项目奖。学习能力强，对新技术保持热情，希望在一个有挑战性的团队中快速成长。"
+        },
+        "careerChange": {
+          "name": "转行求职",
+          "content": "拥有 [years] 年 [previousField] 工作经验，后通过系统学习转型为 [targetRole]。具备跨领域视角，能将 [previousSkill] 与技术能力相结合，为团队带来差异化价值。已完成 [count] 个实战项目，熟练掌握 [techStack]，具备独立开发和解决问题的能力。"
+        },
+        "techLead": {
+          "name": "技术负责人",
+          "content": "[years] 年技术研发与管理经验，现任/曾任 [company] 技术负责人。带领 [teamSize] 人团队，主导 [product] 从 0 到 1 的技术架构建设，支撑 [scale] 级业务增长。擅长技术选型、架构设计和团队培养，对工程效能和代码质量有持续追求。"
+        },
+        "freelancer": {
+          "name": "自由职业/独立开发者",
+          "content": "独立开发者，擅长 [techStack]，拥有 [years] 年全栈开发经验。独立完成 [count] 个产品的设计、开发与上线，累计用户超过 [number]。具备从需求分析、UI 设计到部署运维的全流程能力，注重用户体验和产品细节。"
+        }
+      }
+    },
+    "workGuide": {
+      "title": "填写指南",
+      "toggleShow": "填写指南",
+      "toggleHide": "收起指南",
+      "useTemplate": "使用此模板",
+      "tips": "写作技巧",
+      "tip1": "使用 STAR 法则：情境(Situation) → 任务(Task) → 行动(Action) → 结果(Result)",
+      "tip2": "用数据量化成果，如「将系统响应时间从 2s 优化至 200ms」",
+      "tip3": "每条工作经历写 3-5 条亮点，突出业务影响而非技术细节",
+      "tip4": "最近的工作经历写最详细，早期经历可以精简",
+      "tip5": "使用动词开头：主导、设计、优化、推动、搭建、实现",
+      "templateTitle": "亮点示例（每行一条）",
+      "templates": {
+        "backend": {
+          "name": "后端开发",
+          "highlights": "主导微服务架构重构，将单体应用拆分为 12 个微服务，系统可用性从 99.5% 提升至 99.99%\n设计并实现分布式任务调度系统，日均处理任务量 [number] 万次，零漏执行\n优化数据库查询性能，通过索引优化和缓存策略将核心接口响应时间从 800ms 降至 50ms\n搭建 CI/CD 流水线，实现自动化测试和部署，发布效率提升 300%"
+        },
+        "frontend": {
+          "name": "前端开发",
+          "highlights": "主导前端技术栈从 Vue2 迁移至 React + TypeScript，覆盖 [number] 个页面\n实现组件库和设计系统，封装 [number] 个通用组件，团队开发效率提升 40%\n优化首屏加载性能，通过代码分割和懒加载将 LCP 从 3.2s 降至 0.8s\n搭建前端监控体系，接入错误追踪和性能指标，线上问题平均发现时间缩短至 5 分钟"
+        },
+        "fullstack": {
+          "name": "全栈开发",
+          "highlights": "独立负责 [product] 从 0 到 1 开发，涵盖前端、后端和数据库设计\n采用 Next.js + Node.js + PostgreSQL 技术栈，3 个月内完成 MVP 上线\n上线后 [number] 个月内获取 [number] 万用户，NPS 评分达到 [number]\n实现自动化数据备份和容灾方案，保障数据零丢失"
+        },
+        "management": {
+          "name": "技术管理",
+          "highlights": "管理 [number] 人技术团队，建立代码评审和技术分享机制，团队代码质量提升 30%\n主导 [product] 技术规划，制定季度 OKR 和技术路线图\n推动团队敏捷转型，迭代交付周期从 4 周缩短至 1 周\n招聘并培养 [number] 名高级工程师，团队留存率 95%"
+        }
+      }
+    },
+    "projectGuide": {
+      "title": "填写指南",
+      "toggleShow": "填写指南",
+      "toggleHide": "收起指南",
+      "useTemplate": "使用此模板",
+      "tips": "写作技巧",
+      "tip1": "项目描述简洁明了，1-2 句话说明项目目标和规模",
+      "tip2": "亮点用数据说话：用户量、性能提升百分比、节省的成本等",
+      "tip3": "强调你在项目中的具体角色和贡献，而非团队整体成果",
+      "tip4": "技术栈可以写在描述中，帮助 ATS 系统匹配关键词",
+      "tip5": "个人项目、开源贡献、黑客马拉松作品都可以写",
+      "templateTitle": "项目示例",
+      "templates": {
+        "webApp": {
+          "name": "Web 应用",
+          "description": "一个在线协作白板工具，支持多人实时编辑、评论和历史版本回溯。基于 WebSocket 实现实时同步，使用 Canvas 渲染引擎。",
+          "highlights": "使用 React + TypeScript 开发，集成 CRDT 算法实现无冲突多人协作\n支持 [number] 人同时在线编辑，延迟低于 100ms\n上线 [number] 个月获得 [number] 万注册用户，日均活跃用户 [number]"
+        },
+        "openSource": {
+          "name": "开源项目",
+          "description": "一个轻量级的 React 状态管理库，核心代码不到 1KB，API 设计简洁直觉。",
+          "highlights": "GitHub 获得[number] Star，npm 周下载量 [number] 次\n提供完整的 TypeScript 类型支持和 React DevTools 集成\n编写了 [number]% 覆盖率的单元测试，CI 自动化发布流程"
+        },
+        "infrastructure": {
+          "name": "基础设施",
+          "description": "企业级日志收集与分析平台，日均处理 [number] 亿条日志，支持实时检索和告警。",
+          "highlights": "基于 Kafka + Elasticsearch 构建，日志查询延迟从分钟级降至秒级\n实现智能告警规则引擎，误报率降低 80%，运维效率提升 50%\n设计多租户隔离方案，支撑 [number] 个业务线独立使用"
+        },
+        "mobile": {
+          "name": "移动端应用",
+          "description": "跨平台健康管理 App，支持 iOS 和 Android，提供运动追踪、饮食记录和健康报告。",
+          "highlights": "使用 React Native 开发，一套代码覆盖双端，开发效率提升 60%\n集成 HealthKit 和 Google Fit，实现健康数据自动同步\n上线首月下载量突破 [number] 万，App Store 评分 4.8"
+        }
+      }
+    }
   },
   "patches": {
     "title": "补丁",
@@ -184,7 +303,14 @@
     "loading": "加载中..."
   },
   "preview": {
-    "loadingPreview": "加载预览中..."
+    "loadingPreview": "加载预览中...",
+    "backToEditor": "返回编辑器",
+    "exportPdf": "导出 PDF",
+    "exportMarkdown": "导出 Markdown",
+    "exportJson": "导出 JSON",
+    "exporting": "导出中...",
+    "exportSuccess": "导出成功",
+    "exportFailed": "导出失败"
   },
   "settings": {
     "title": "API 密钥管理",

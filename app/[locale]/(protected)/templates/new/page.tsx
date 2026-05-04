@@ -97,6 +97,7 @@ export default function NewTemplatePage() {
               }
             }}
             placeholder={t("editor.displayNamePlaceholder")}
+            maxLength={100}
           />
         </div>
 
@@ -107,6 +108,8 @@ export default function NewTemplatePage() {
             onChange={(e) => setName(e.target.value)}
             placeholder={t("editor.namePlaceholder")}
             className="font-mono"
+            pattern="[a-z0-9][a-z0-9-]*"
+            maxLength={50}
           />
           <p className="mt-1 text-xs text-[var(--muted-foreground)]">{t("editor.nameHint")}</p>
         </div>
@@ -116,6 +119,7 @@ export default function NewTemplatePage() {
           <Input
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            maxLength={200}
           />
         </div>
 

@@ -30,7 +30,10 @@ export async function GET(
     resource: `resume/${id}`,
   });
 
-  return new Response(md, {
-    headers: { "Content-Type": "text/markdown; charset=utf-8" },
+  return new NextResponse(md, {
+    status: 200,
+    headers: {
+      "Content-Type": "text/markdown; charset=utf-8",
+    },
   });
 }

@@ -20,7 +20,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Trash2, ArrowUp, ArrowDown, Save, Eye, Loader2, ZoomIn, ZoomOut, Maximize } from "lucide-react";
+import { Plus, Trash2, ArrowUp, ArrowDown, Save, Eye, FileDown, FileText, FileCode, ZoomIn, ZoomOut, Maximize } from "lucide-react";
+import { LoadingPage } from "@/components/loading-page";
 
 type Section = "basic" | "summary" | "education" | "workExperience" | "projects" | "skills" | "certificates" | "openSource" | "customSections";
 
@@ -45,6 +46,7 @@ export default function EditResumePage() {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [dirty, setDirty] = useState(false);
+  const [exporting, setExporting] = useState<string | null>(null);
   const revisionRef = useRef(0);
   const inFlightSavesRef = useRef(0);
 
@@ -97,6 +99,29 @@ export default function EditResumePage() {
     return () => clearTimeout(timer);
   }, [dirty, save]);
 
+  async function handleExport(format: "pdf" | "markdown" | "json") {
+    setExporting(format);
+    try {
+      const method = format === "pdf" ? "POST" : "GET";
+      const res = await fetch(`/api/resumes/${id}/export/${format}`, { method });
+      if (!res.ok) throw new Error("Export failed");
+      const blob = await res.blob();
+      const ext = format === "pdf" ? "pdf" : format === "markdown" ? "md" : "json";
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${title || "resume"}.${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Export failed:", err);
+    } finally {
+      setExporting(null);
+    }
+  }
+
   function updateContent(updater: (prev: ResumeContent) => ResumeContent) {
     revisionRef.current += 1;
     setContent((prev) => updater(prev));
@@ -104,12 +129,7 @@ export default function EditResumePage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex h-[calc(100vh-3.5rem)] items-center justify-center text-[var(--muted-foreground)]">
-        <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-        {t("loading")}
-      </div>
-    );
+    return <LoadingPage text={t("loading")} />;
   }
 
   return (
@@ -168,11 +188,28 @@ export default function EditResumePage() {
             </button>
           ))}
         </div>
-        <div className="mt-4 pt-4 border-t border-[var(--border)]">
+        <div className="mt-4 pt-4 space-y-2 border-t border-[var(--border)]">
           <Button variant="outline" className="w-full justify-start" onClick={() => router.push(`/resumes/${id}/preview`)}>
             <Eye className="mr-2 h-4 w-4" />
             {t("fullPreview")}
           </Button>
+          <div className="pt-2">
+            <p className="mb-2 text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">{t("export")}</p>
+            <div className="flex flex-col gap-1">
+              <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8" onClick={() => handleExport("pdf")} disabled={exporting !== null}>
+                <FileDown className="mr-2 h-3.5 w-3.5" />
+                {exporting === "pdf" ? t("exporting") : t("exportPdf")}
+              </Button>
+              <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8" onClick={() => handleExport("markdown")} disabled={exporting !== null}>
+                <FileText className="mr-2 h-3.5 w-3.5" />
+                {exporting === "markdown" ? t("exporting") : t("exportMarkdown")}
+              </Button>
+              <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8" onClick={() => handleExport("json")} disabled={exporting !== null}>
+                <FileCode className="mr-2 h-3.5 w-3.5" />
+                {exporting === "json" ? t("exporting") : t("exportJson")}
+              </Button>
+            </div>
+          </div>
         </div>
       </nav>
 
@@ -226,11 +263,34 @@ function FormSection({
   }
 }
 
+const BASIC_FIELD_CONFIG: Record<string, {
+  type?: string; inputMode?: string; autoComplete?: string; placeholderKey?: string; fullWidth?: boolean;
+}> = {
+  name:         { autoComplete: "name", fullWidth: true },
+  email:        { type: "email", autoComplete: "email", placeholderKey: "emailPlaceholder" },
+  phone:        { inputMode: "tel", autoComplete: "tel", placeholderKey: "phonePlaceholder" },
+  location:     { autoComplete: "address-level2", fullWidth: true },
+  website:      { type: "url", placeholderKey: "websitePlaceholder" },
+  github:       { type: "url", placeholderKey: "githubPlaceholder" },
+  linkedin:     { type: "url", placeholderKey: "linkedinPlaceholder" },
+};
+
 function BasicForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
   const t = useTranslations("editor");
   const b = content.basic;
+  const [errors, setErrors] = useState<Record<string, string>>({});
   function set(key: string, val: string) {
     updateContent((p) => ({ ...p, basic: { ...p.basic, [key]: val } }));
+    if (errors[key]) setErrors((prev) => { const next = { ...prev }; delete next[key]; return next; });
+  }
+  function validate(key: string, val: string) {
+    if (!val) return;
+    const cfg = BASIC_FIELD_CONFIG[key];
+    if (cfg?.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+      setErrors((prev) => ({ ...prev, [key]: t("fields.invalidEmail") }));
+    } else if (cfg?.type === "url" && !/^https?:\/\/.+/.test(val)) {
+      setErrors((prev) => ({ ...prev, [key]: t("fields.invalidUrl") }));
+    }
   }
   const fields = ["name", "email", "phone", "location", "website", "github", "linkedin"];
   return (
@@ -240,15 +300,25 @@ function BasicForm({ content, updateContent }: { content: ResumeContent; updateC
         <p className="text-sm text-[var(--muted-foreground)]">Add your contact information.</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        {fields.map((key) => (
-          <div key={key} className={key === "location" || key === "name" ? "sm:col-span-2" : ""}>
-            <label className="mb-1.5 block text-sm font-medium text-[var(--foreground)]">{t(`fields.${key}`)}</label>
-            <Input
-              value={(b as any)[key] || ""}
-              onChange={(e) => set(key, e.target.value)}
-            />
-          </div>
-        ))}
+        {fields.map((key) => {
+          const cfg = BASIC_FIELD_CONFIG[key] || {};
+          return (
+            <div key={key} className={cfg.fullWidth ? "sm:col-span-2" : ""}>
+              <label className="mb-1.5 block text-sm font-medium text-[var(--foreground)]">{t(`fields.${key}`)}</label>
+              <Input
+                type={cfg.type as "email" | "url" | "text" | undefined}
+                inputMode={cfg.inputMode as "tel" | "decimal" | "text" | undefined}
+                autoComplete={cfg.autoComplete}
+                placeholder={cfg.placeholderKey ? t(`fields.${cfg.placeholderKey}`) : undefined}
+                value={(b as Record<string, string>)[key] || ""}
+                onChange={(e) => set(key, e.target.value)}
+                onBlur={(e) => validate(key, e.target.value)}
+                className={errors[key] ? "border-red-500 focus-visible:ring-red-500" : ""}
+              />
+              {errors[key] && <p className="mt-1 text-xs text-red-500">{errors[key]}</p>}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -256,18 +326,68 @@ function BasicForm({ content, updateContent }: { content: ResumeContent; updateC
 
 function SummaryForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
   const t = useTranslations("editor");
+  const g = useTranslations("editor.summaryGuide");
+  const [showGuide, setShowGuide] = useState(true);
+  const templateKeys = ["experienced", "junior", "careerChange", "techLead", "freelancer"] as const;
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight">{t("sections.summary")}</h2>
-        <p className="text-sm text-[var(--muted-foreground)]">A brief professional summary.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">{t("sections.summary")}</h2>
+          <p className="text-sm text-[var(--muted-foreground)]">A brief professional summary.</p>
+        </div>
+        <Button variant="outline" size="sm" onClick={() => setShowGuide(!showGuide)}>
+          {showGuide ? g("toggleHide") : g("toggleShow")}
+        </Button>
       </div>
+
       <Textarea
         value={content.summary}
         onChange={(e) => updateContent((p) => ({ ...p, summary: e.target.value }))}
         rows={10}
         className="resize-y"
+        placeholder={g("tips")}
       />
+
+      {showGuide && (
+        <div className="space-y-4">
+          {/* Writing Tips */}
+          <div className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--muted)]/30 p-4">
+            <h3 className="mb-3 text-sm font-semibold">{g("tips")}</h3>
+            <ul className="space-y-1.5 text-xs text-[var(--muted-foreground)]">
+              {([1, 2, 3, 4, 5] as const).map((i) => (
+                <li key={i} className="flex items-start gap-2">
+                  <span className="mt-0.5 shrink-0 h-1.5 w-1.5 rounded-full bg-[var(--primary)]" />
+                  {g(`tip${i}`)}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Template Cards */}
+          <div>
+            <h3 className="mb-3 text-sm font-semibold">{g("templateTitle")}</h3>
+            <div className="space-y-3">
+              {templateKeys.map((key) => (
+                <div key={key} className="group rounded-[var(--radius)] border border-[var(--border)] p-3 transition-colors hover:border-[var(--primary)]/50">
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-xs font-semibold text-[var(--foreground)]">{g(`templates.${key}.name`)}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-xs opacity-0 transition-opacity group-hover:opacity-100"
+                      onClick={() => updateContent((p) => ({ ...p, summary: g(`templates.${key}.content`) }))}
+                    >
+                      {g("useTemplate")}
+                    </Button>
+                  </div>
+                  <p className="text-xs leading-relaxed text-[var(--muted-foreground)]">{g(`templates.${key}.content`)}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -342,15 +462,15 @@ function EducationForm({ content, updateContent }: { content: ResumeContent; upd
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.startDate")}</label>
-                <Input value={item.startDate} onChange={(e) => update(i, "startDate", e.target.value)} placeholder="e.g., Sep 2018" />
+                <Input value={item.startDate} onChange={(e) => update(i, "startDate", e.target.value)} placeholder={t("fields.startDatePlaceholder")} />
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.endDate")}</label>
-                <Input value={item.endDate} onChange={(e) => update(i, "endDate", e.target.value)} placeholder="e.g., Jun 2022" />
+                <Input value={item.endDate} onChange={(e) => update(i, "endDate", e.target.value)} placeholder={t("fields.endDatePlaceholder")} />
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.gpa")}</label>
-                <Input value={item.gpa} onChange={(e) => update(i, "gpa", e.target.value)} />
+                <Input value={item.gpa} onChange={(e) => update(i, "gpa", e.target.value)} inputMode="decimal" placeholder={t("fields.gpaPlaceholder")} />
               </div>
               <div className="sm:col-span-2">
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.description")}</label>
@@ -366,6 +486,9 @@ function EducationForm({ content, updateContent }: { content: ResumeContent; upd
 
 function WorkExperienceForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
   const t = useTranslations("editor");
+  const g = useTranslations("editor.workGuide");
+  const [showGuide, setShowGuide] = useState(true);
+  const workTemplateKeys = ["backend", "frontend", "fullstack", "management"] as const;
   const items = content.workExperience;
   function add() {
     updateContent((p) => ({
@@ -398,10 +521,71 @@ function WorkExperienceForm({ content, updateContent }: { content: ResumeContent
           <h2 className="text-2xl font-bold tracking-tight">{t("sections.workExperience")}</h2>
           <p className="text-sm text-[var(--muted-foreground)]">Your professional career timeline.</p>
         </div>
-        <Button onClick={add} size="sm">
-          <Plus className="mr-2 h-4 w-4" /> {t("add")}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => setShowGuide(!showGuide)}>
+            {showGuide ? g("toggleHide") : g("toggleShow")}
+          </Button>
+          <Button onClick={add} size="sm">
+            <Plus className="mr-2 h-4 w-4" /> {t("add")}
+          </Button>
+        </div>
       </div>
+
+      {showGuide && (
+        <div className="space-y-4">
+          {/* Writing Tips */}
+          <div className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--muted)]/30 p-4">
+            <h3 className="mb-3 text-sm font-semibold">{g("tips")}</h3>
+            <ul className="space-y-1.5 text-xs text-[var(--muted-foreground)]">
+              {([1, 2, 3, 4, 5] as const).map((i) => (
+                <li key={i} className="flex items-start gap-2">
+                  <span className="mt-0.5 shrink-0 h-1.5 w-1.5 rounded-full bg-[var(--primary)]" />
+                  {g(`tip${i}`)}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Highlight Template Cards */}
+          <div>
+            <h3 className="mb-3 text-sm font-semibold">{g("templateTitle")}</h3>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {workTemplateKeys.map((key) => (
+                <div key={key} className="group rounded-[var(--radius)] border border-[var(--border)] p-3 transition-colors hover:border-[var(--primary)]/50">
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-xs font-semibold text-[var(--foreground)]">{g(`templates.${key}.name`)}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-xs opacity-0 transition-opacity group-hover:opacity-100"
+                      onClick={() => {
+                        const highlights = g(`templates.${key}.highlights`).split("\n");
+                        // Fill into the first work experience item, or add a new one
+                        if (items.length === 0) {
+                          updateContent((p) => ({
+                            ...p,
+                            workExperience: [{ id: crypto.randomUUID(), company: "", position: "", startDate: "", endDate: "", description: "", highlights }],
+                          }));
+                        } else {
+                          update(0, "highlights", highlights);
+                        }
+                      }}
+                    >
+                      {g("useTemplate")}
+                    </Button>
+                  </div>
+                  <div className="space-y-1">
+                    {g(`templates.${key}.highlights`).split("\n").map((line, idx) => (
+                      <p key={idx} className="text-xs leading-relaxed text-[var(--muted-foreground)]">• {line}</p>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-4">
         {items.map((item, i) => (
           <Card key={item.id} className="relative shadow-sm transition-all hover:shadow-md">
@@ -430,11 +614,11 @@ function WorkExperienceForm({ content, updateContent }: { content: ResumeContent
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.startDate")}</label>
-                <Input value={item.startDate} onChange={(e) => update(i, "startDate", e.target.value)} placeholder="e.g., Jan 2021" />
+                <Input value={item.startDate} onChange={(e) => update(i, "startDate", e.target.value)} placeholder={t("fields.startDatePlaceholder")} />
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.endDate")}</label>
-                <Input value={item.endDate} onChange={(e) => update(i, "endDate", e.target.value)} placeholder="e.g., Present" />
+                <Input value={item.endDate} onChange={(e) => update(i, "endDate", e.target.value)} placeholder={t("fields.endDatePlaceholder")} />
               </div>
               <div className="sm:col-span-2">
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.description")}</label>
@@ -454,6 +638,9 @@ function WorkExperienceForm({ content, updateContent }: { content: ResumeContent
 
 function ProjectsForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
   const t = useTranslations("editor");
+  const g = useTranslations("editor.projectGuide");
+  const [showGuide, setShowGuide] = useState(true);
+  const projectTemplateKeys = ["webApp", "openSource", "infrastructure", "mobile"] as const;
   const items = content.projects;
   function add() {
     updateContent((p) => ({
@@ -486,10 +673,74 @@ function ProjectsForm({ content, updateContent }: { content: ResumeContent; upda
           <h2 className="text-2xl font-bold tracking-tight">{t("sections.projects")}</h2>
           <p className="text-sm text-[var(--muted-foreground)]">Showcase your notable projects.</p>
         </div>
-        <Button onClick={add} size="sm">
-          <Plus className="mr-2 h-4 w-4" /> {t("add")}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => setShowGuide(!showGuide)}>
+            {showGuide ? g("toggleHide") : g("toggleShow")}
+          </Button>
+          <Button onClick={add} size="sm">
+            <Plus className="mr-2 h-4 w-4" /> {t("add")}
+          </Button>
+        </div>
       </div>
+
+      {showGuide && (
+        <div className="space-y-4">
+          {/* Writing Tips */}
+          <div className="rounded-[var(--radius)] border border-[var(--border)] bg-[var(--muted)]/30 p-4">
+            <h3 className="mb-3 text-sm font-semibold">{g("tips")}</h3>
+            <ul className="space-y-1.5 text-xs text-[var(--muted-foreground)]">
+              {([1, 2, 3, 4, 5] as const).map((i) => (
+                <li key={i} className="flex items-start gap-2">
+                  <span className="mt-0.5 shrink-0 h-1.5 w-1.5 rounded-full bg-[var(--primary)]" />
+                  {g(`tip${i}`)}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Project Template Cards */}
+          <div>
+            <h3 className="mb-3 text-sm font-semibold">{g("templateTitle")}</h3>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {projectTemplateKeys.map((key) => (
+                <div key={key} className="group rounded-[var(--radius)] border border-[var(--border)] p-3 transition-colors hover:border-[var(--primary)]/50">
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-xs font-semibold text-[var(--foreground)]">{g(`templates.${key}.name`)}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-xs opacity-0 transition-opacity group-hover:opacity-100"
+                      onClick={() => {
+                        const description = g(`templates.${key}.description`);
+                        const highlights = g(`templates.${key}.highlights`).split("\n");
+                        // Fill into the first project item, or add a new one
+                        if (items.length === 0) {
+                          updateContent((p) => ({
+                            ...p,
+                            projects: [{ id: crypto.randomUUID(), name: "", role: "", startDate: "", endDate: "", description, url: "", highlights }],
+                          }));
+                        } else {
+                          update(0, "description", description);
+                          update(0, "highlights", highlights);
+                        }
+                      }}
+                    >
+                      {g("useTemplate")}
+                    </Button>
+                  </div>
+                  <p className="mb-2 text-xs leading-relaxed text-[var(--muted-foreground)]">{g(`templates.${key}.description`)}</p>
+                  <div className="space-y-1">
+                    {g(`templates.${key}.highlights`).split("\n").map((line, idx) => (
+                      <p key={idx} className="text-xs leading-relaxed text-[var(--muted-foreground)]">• {line}</p>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-4">
         {items.map((item, i) => (
           <Card key={item.id} className="relative shadow-sm transition-all hover:shadow-md">
@@ -526,7 +777,7 @@ function ProjectsForm({ content, updateContent }: { content: ResumeContent; upda
               </div>
               <div className="sm:col-span-2">
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.url")}</label>
-                <Input value={item.url} onChange={(e) => update(i, "url", e.target.value)} placeholder="https://" />
+                <Input type="url" value={item.url} onChange={(e) => update(i, "url", e.target.value)} placeholder="https://" />
               </div>
               <div className="sm:col-span-2">
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.description")}</label>
@@ -653,11 +904,11 @@ function CertificatesForm({ content, updateContent }: { content: ResumeContent; 
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.date")}</label>
-                <Input value={item.date} onChange={(e) => update(i, "date", e.target.value)} />
+                <Input value={item.date} onChange={(e) => update(i, "date", e.target.value)} placeholder={t("fields.datePlaceholder")} />
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.url")}</label>
-                <Input value={item.url} onChange={(e) => update(i, "url", e.target.value)} placeholder="https://" />
+                <Input type="url" value={item.url} onChange={(e) => update(i, "url", e.target.value)} placeholder="https://" />
               </div>
             </CardContent>
           </Card>
@@ -716,7 +967,7 @@ function OpenSourceForm({ content, updateContent }: { content: ResumeContent; up
               </div>
               <div className="sm:col-span-2">
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.url")}</label>
-                <Input value={item.url} onChange={(e) => update(i, "url", e.target.value)} placeholder="https://" />
+                <Input type="url" value={item.url} onChange={(e) => update(i, "url", e.target.value)} placeholder="https://" />
               </div>
               <div className="sm:col-span-2">
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.description")}</label>
@@ -787,7 +1038,9 @@ function CustomSectionsForm({ content, updateContent }: { content: ResumeContent
 
 function PreviewPanel({ content, templateName }: { content: ResumeContent; templateName: string }) {
   const [html, setHtml] = useState("");
+  const [pages, setPages] = useState<string[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
+  const hiddenRef = useRef<HTMLIFrameElement>(null);
   const [autoScale, setAutoScale] = useState(1);
   const [userScale, setUserScale] = useState<number | null>(null);
 
@@ -804,11 +1057,62 @@ function PreviewPanel({ content, templateName }: { content: ResumeContent; templ
       .catch(() => {});
   }, [content, templateName]);
 
+  // Paginate content when html changes
+  useEffect(() => {
+    if (!html) return;
+    // Use a small delay to let the hidden iframe render
+    const timer = setTimeout(() => {
+      const iframe = hiddenRef.current;
+      if (!iframe) return;
+      const doc = iframe.contentDocument;
+      if (!doc?.body?.children.length) return;
+
+      const body = doc.body;
+      const sections = Array.from(body.children) as HTMLElement[];
+      const pageDivs: string[] = [];
+      const bodyPadding = 80;
+      const usableHeight = 1123 - bodyPadding;
+
+      let currentSections: string[] = [];
+      let currentHeight = 0;
+
+      for (const section of sections) {
+        const h = (section as HTMLElement).offsetHeight;
+
+        if (h > usableHeight) {
+          if (currentSections.length > 0) {
+            pageDivs.push(currentSections.join(""));
+            currentSections = [];
+            currentHeight = 0;
+          }
+          pageDivs.push(section.outerHTML);
+          continue;
+        }
+
+        if (currentHeight + h > usableHeight && currentSections.length > 0) {
+          pageDivs.push(currentSections.join(""));
+          currentSections = [];
+          currentHeight = 0;
+        }
+
+        currentSections.push(section.outerHTML);
+        currentHeight += h;
+      }
+
+      if (currentSections.length > 0) {
+        pageDivs.push(currentSections.join(""));
+      }
+
+      setPages(pageDivs.length > 0 ? pageDivs : [body.innerHTML]);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [html]);
+
   useEffect(() => {
     const updateScale = () => {
       if (containerRef.current) {
         const parentWidth = containerRef.current.parentElement?.clientWidth || 0;
-        const targetWidth = parentWidth - 48; // padding
+        const targetWidth = parentWidth - 48;
         if (targetWidth < 794) {
           setAutoScale(targetWidth / 794);
         } else {
@@ -825,8 +1129,21 @@ function PreviewPanel({ content, templateName }: { content: ResumeContent; templ
   const handleZoomOut = () => setUserScale((prev) => Math.max((prev || autoScale) - 0.1, 0.3));
   const handleResetZoom = () => setUserScale(null);
 
+  const pageCount = pages.length || 1;
+  const totalScaledHeight = pageCount * 1123 + (pageCount - 1) * 24;
+  const marginCompensation = totalScaledHeight * (1 - currentScale);
+
   return (
     <div ref={containerRef} className="mx-auto flex flex-col items-center pb-12 w-full relative">
+      {/* Hidden measurement iframe */}
+      <iframe
+        ref={hiddenRef}
+        srcDoc={html}
+        style={{ position: "absolute", width: "794px", height: "0", visibility: "hidden", border: "none" }}
+        title="measure"
+        sandbox="allow-same-origin"
+      />
+
       <div className="sticky top-0 z-10 mb-4 flex items-center gap-2 rounded-[var(--radius)] border border-[var(--border)] bg-[var(--background)]/90 px-2 py-1 backdrop-blur shadow-sm">
         <Button variant="ghost" size="icon" className="h-8 w-8 text-[var(--muted-foreground)] hover:text-[var(--foreground)]" onClick={handleZoomOut} title="Zoom Out">
           <ZoomOut className="h-4 w-4" />
@@ -844,22 +1161,51 @@ function PreviewPanel({ content, templateName }: { content: ResumeContent; templ
       </div>
 
       <div
-        className="rounded-md bg-white shadow-2xl ring-1 ring-black/5 transition-transform duration-200"
-        style={{ 
-          width: "794px", 
-          height: "1123px", 
-          transformOrigin: "top center", 
+        className="flex flex-col items-center transition-transform duration-200"
+        style={{
+          transformOrigin: "top center",
           transform: `scale(${currentScale})`,
-          marginBottom: `-${1123 * (1 - currentScale)}px`
+          marginBottom: `-${marginCompensation}px`,
+          gap: "24px",
         }}
       >
-        <iframe
-          srcDoc={html}
-          className="h-[1123px] w-[794px] border-0 pointer-events-none"
-          title="Resume Preview"
-          sandbox="allow-same-origin"
-        />
+        {pages.map((pageHtml, idx) => (
+          <div
+            key={idx}
+            className="rounded-md bg-white shadow-2xl ring-1 ring-black/5 overflow-hidden"
+            style={{ width: "794px", height: "1123px" }}
+          >
+            <iframe
+              srcDoc={wrapPreviewPage(pageHtml)}
+              className="h-full w-full border-0 pointer-events-none"
+              title={`Page ${idx + 1}`}
+              sandbox="allow-same-origin"
+            />
+          </div>
+        ))}
+        {pages.length === 0 && html && (
+          <div
+            className="rounded-md bg-white shadow-2xl ring-1 ring-black/5 overflow-hidden"
+            style={{ width: "794px", height: "1123px" }}
+          >
+            <iframe
+              srcDoc={html}
+              className="h-full w-full border-0 pointer-events-none"
+              title="Resume Preview"
+              sandbox="allow-same-origin"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
+}
+
+function wrapPreviewPage(body: string): string {
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+  *{box-sizing:border-box;}
+  html,body{width:210mm;height:297mm;padding:0;margin:0 auto;overflow:hidden;background:white;}
+  body{padding:40px 48px;font-family:system-ui,-apple-system,sans-serif;color:#333;line-height:1.5;}
+  h1,h2,h3{page-break-after:avoid;}
+</style></head><body>${body}</body></html>`;
 }

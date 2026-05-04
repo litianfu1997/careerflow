@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { LoadingPage } from "@/components/loading-page";
 
 const VARIABLE_LIST = [
   "header", "summary", "education", "workExperience", "projects",
@@ -89,11 +90,7 @@ export default function EditTemplatePage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex h-[calc(100vh-3.5rem)] items-center justify-center">
-        <Loader2 className="mr-2 h-6 w-6 animate-spin text-[var(--muted-foreground)]" />
-      </div>
-    );
+    return <LoadingPage text={t("loading")} />;
   }
 
   return (
@@ -114,6 +111,7 @@ export default function EditTemplatePage() {
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             placeholder={t("editor.displayNamePlaceholder")}
+            maxLength={100}
           />
         </div>
 
@@ -122,6 +120,7 @@ export default function EditTemplatePage() {
           <Input
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            maxLength={200}
           />
         </div>
 
@@ -175,7 +174,7 @@ export default function EditTemplatePage() {
           <iframe
             srcDoc={previewHtml}
             className="bg-white shadow-lg rounded-md"
-            style={{ width: "794px", height: "1123px", border: "none" }}
+            style={{ width: "794px", minHeight: "1123px", border: "none" }}
             title="Template Preview"
             sandbox="allow-same-origin"
           />

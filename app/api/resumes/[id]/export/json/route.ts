@@ -20,13 +20,16 @@ export async function GET(
   });
 
   const content = typeof resume.contentJson === "string"
-    ? resume.contentJson
+    ? JSON.stringify(JSON.parse(resume.contentJson), null, 2)
     : JSON.stringify(resume.contentJson, null, 2);
 
-  return new Response(content, {
+  const safeFilename = Buffer.from(resume.title, "utf-8").toString("ascii").replace(/[^\x20-\x7e]/g, "_").substring(0, 100);
+
+  return new NextResponse(content, {
+    status: 200,
     headers: {
-      "Content-Type": "application/json",
-      "Content-Disposition": `attachment; filename="${resume.title}.json"`,
+      "Content-Type": "application/json; charset=utf-8",
+      "Content-Disposition": `attachment; filename="${safeFilename}.json"`,
     },
   });
 }

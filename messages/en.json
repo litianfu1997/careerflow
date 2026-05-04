@@ -131,6 +131,13 @@
     "saved": "Saved",
     "saveNow": "Save now",
     "fullPreview": "Full Preview",
+    "export": "Export",
+    "exportPdf": "Export PDF",
+    "exportMarkdown": "Export Markdown",
+    "exportJson": "Export JSON",
+    "exporting": "Exporting...",
+    "exportSuccess": "Exported successfully",
+    "exportFailed": "Export failed",
     "loading": "Loading...",
     "add": "Add",
     "addCategory": "Add Category",
@@ -167,9 +174,121 @@
       "newProject": "New Project",
       "newCategory": "New Category",
       "newCertificate": "New Certificate",
-      "newSection": "New Section"
+      "newSection": "New Section",
+      "emailPlaceholder": "name@example.com",
+      "phonePlaceholder": "+1 (555) 000-0000",
+      "websitePlaceholder": "https://example.com",
+      "githubPlaceholder": "https://github.com/username",
+      "linkedinPlaceholder": "https://linkedin.com/in/username",
+      "gpaPlaceholder": "3.8/4.0",
+      "datePlaceholder": "e.g., Jan 2024",
+      "startDatePlaceholder": "e.g., Sep 2018",
+      "endDatePlaceholder": "e.g., Jun 2022",
+      "invalidEmail": "Please enter a valid email address",
+      "invalidUrl": "Please enter a valid URL"
     },
-    "certificatesTitle": "Certificates & Awards"
+    "certificatesTitle": "Certificates & Awards",
+    "summaryGuide": {
+      "title": "Writing Guide",
+      "toggleShow": "Writing Guide",
+      "toggleHide": "Hide Guide",
+      "tips": "Writing Tips",
+      "tip1": "Keep it to 3-5 sentences, about 100-200 words",
+      "tip2": "Highlight your core strengths and career positioning",
+      "tip3": "Quantify achievements with data (e.g., \"improved efficiency by 30%\")",
+      "tip4": "Match keywords from the target job description to improve ATS pass rate",
+      "tip5": "Avoid first-person pronouns; state facts directly",
+      "templateTitle": "Sample Templates",
+      "useTemplate": "Use this template",
+      "templates": {
+        "experienced": {
+          "name": "Senior Engineer",
+          "content": "Senior engineer with [years] years of experience in [field], specializing in [techStack]. Led architecture design and delivery of multiple large-scale projects serving over [number] million users. Strong team collaboration and technical problem-solving skills, adept at translating complex business requirements into high-performance, scalable technical solutions."
+        },
+        "junior": {
+          "name": "Entry Level / Junior",
+          "content": "[major] graduate with solid computer science fundamentals and clean coding habits. Proficient in [techStack], contributed to [count] projects during university, including [project] which won a campus excellence award. Fast learner passionate about new technologies, eager to grow in a challenging team environment."
+        },
+        "careerChange": {
+          "name": "Career Change",
+          "content": "[years] years of experience in [previousField], transitioned to [targetRole] through systematic study. Cross-domain perspective combining [previousSkill] with technical skills to bring unique value to the team. Completed [count] hands-on projects, proficient in [techStack], capable of independent development and problem-solving."
+        },
+        "techLead": {
+          "name": "Tech Lead",
+          "content": "[years] years of R&D and management experience, Tech Lead at [company]. Led a team of [teamSize], drove the architecture of [product] from zero to one, supporting [scale]-scale business growth. Expertise in technology selection, architecture design, and team mentorship with a continuous focus on engineering efficiency and code quality."
+        },
+        "freelancer": {
+          "name": "Freelancer / Indie Dev",
+          "content": "Independent developer skilled in [techStack] with [years] years of full-stack experience. Independently designed, developed, and launched [count] products with a combined user base exceeding [number]. Capable of handling the entire workflow from requirements analysis and UI design to deployment and operations, with a strong focus on user experience and product details."
+        }
+      }
+    },
+    "workGuide": {
+      "title": "Writing Guide",
+      "toggleShow": "Writing Guide",
+      "toggleHide": "Hide Guide",
+      "useTemplate": "Use This Template",
+      "tips": "Writing Tips",
+      "tip1": "Use the STAR method: Situation → Task → Action → Result",
+      "tip2": "Quantify achievements with data, e.g., \"optimized system response time from 2s to 200ms\"",
+      "tip3": "Write 3-5 highlights per position, focusing on business impact over technical details",
+      "tip4": "Most detail for recent roles; earlier positions can be more concise",
+      "tip5": "Start with action verbs: Led, Designed, Optimized, Drove, Built, Implemented",
+      "templateTitle": "Highlight Examples (one per line)",
+      "templates": {
+        "backend": {
+          "name": "Backend Dev",
+          "highlights": "Led microservices architecture refactoring, splitting monolith into 12 microservices, improving system availability from 99.5% to 99.99%\nDesigned and implemented distributed task scheduling system, processing [number] million tasks daily with zero missed executions\nOptimized database query performance through indexing and caching strategies, reducing core API response time from 800ms to 50ms\nBuilt CI/CD pipeline enabling automated testing and deployment, increasing release efficiency by 300%"
+        },
+        "frontend": {
+          "name": "Frontend Dev",
+          "highlights": "Led frontend tech stack migration from Vue2 to React + TypeScript across [number] pages\nBuilt component library and design system with [number] reusable components, improving team dev efficiency by 40%\nOptimized first-screen loading performance through code splitting and lazy loading, reducing LCP from 3.2s to 0.8s\nSet up frontend monitoring system with error tracking and performance metrics, reducing average issue detection time to 5 minutes"
+        },
+        "fullstack": {
+          "name": "Full-Stack Dev",
+          "highlights": "Independently built [product] from scratch, covering frontend, backend, and database design\nAdopted Next.js + Node.js + PostgreSQL stack, delivered MVP within 3 months\nAcquired [number] million users within [number] months of launch, NPS score of [number]\nImplemented automated data backup and disaster recovery, ensuring zero data loss"
+        },
+        "management": {
+          "name": "Tech Management",
+          "highlights": "Managed a team of [number] engineers, established code review and tech sharing practices, improving code quality by 30%\nLed technical planning for [product], defined quarterly OKRs and technology roadmap\nDrove team agile transformation, reducing sprint cycle from 4 weeks to 1 week\nHired and mentored [number] senior engineers, achieving 95% team retention rate"
+        }
+      }
+    },
+    "projectGuide": {
+      "title": "Writing Guide",
+      "toggleShow": "Writing Guide",
+      "toggleHide": "Hide Guide",
+      "useTemplate": "Use This Template",
+      "tips": "Writing Tips",
+      "tip1": "Keep project description concise: 1-2 sentences on the goal and scale",
+      "tip2": "Use data for highlights: user count, performance gains, cost savings, etc.",
+      "tip3": "Emphasize your specific role and contribution, not just team achievements",
+      "tip4": "Mention tech stack in descriptions to help ATS keyword matching",
+      "tip5": "Personal projects, open source contributions, and hackathon entries all count",
+      "templateTitle": "Project Examples",
+      "templates": {
+        "webApp": {
+          "name": "Web Application",
+          "description": "An online collaborative whiteboard tool supporting real-time multi-user editing, comments, and version history. Built with WebSocket for real-time sync and Canvas rendering engine.",
+          "highlights": "Built with React + TypeScript, integrated CRDT algorithm for conflict-free multi-user collaboration\nSupports [number] concurrent users with latency under 100ms\nReached [number] million registered users within [number] months of launch"
+        },
+        "openSource": {
+          "name": "Open Source",
+          "description": "A lightweight React state management library with under 1KB core code and an intuitive API design.",
+          "highlights": "Achieved [number] GitHub Stars, [number] weekly npm downloads\nFull TypeScript support and React DevTools integration\n[Unit test coverage]% test coverage with automated CI publishing workflow"
+        },
+        "infrastructure": {
+          "name": "Infrastructure",
+          "description": "Enterprise log collection and analysis platform processing [number] billion log entries daily, supporting real-time search and alerting.",
+          "highlights": "Built with Kafka + Elasticsearch, reduced log query latency from minutes to seconds\nImplemented smart alerting rule engine, reducing false positives by 80% and improving ops efficiency by 50%\nDesigned multi-tenant isolation supporting [number] independent business lines"
+        },
+        "mobile": {
+          "name": "Mobile App",
+          "description": "Cross-platform health management app for iOS and Android with fitness tracking, diet logging, and health reports.",
+          "highlights": "Built with React Native for both platforms, improving dev efficiency by 60%\nIntegrated HealthKit and Google Fit for automatic health data sync\nSurpassed [number] million downloads in the first month, 4.8 App Store rating"
+        }
+      }
+    }
   },
   "patches": {
     "title": "Patches",
@@ -184,7 +303,14 @@
     "loading": "Loading..."
   },
   "preview": {
-    "loadingPreview": "Loading preview..."
+    "loadingPreview": "Loading preview...",
+    "backToEditor": "Back to editor",
+    "exportPdf": "Export PDF",
+    "exportMarkdown": "Export Markdown",
+    "exportJson": "Export JSON",
+    "exporting": "Exporting...",
+    "exportSuccess": "Export started",
+    "exportFailed": "Export failed"
   },
   "settings": {
     "title": "API Key Management",

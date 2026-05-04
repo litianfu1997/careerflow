@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { LoadingPage } from "@/components/loading-page";
 
 type UserView = { id: string; email: string; nickname: string | null; role: string; createdAt: string };
 type ResumeView = { id: string; title: string; userId: string; status: string; createdAt: string; updatedAt: string };
@@ -50,7 +51,7 @@ export default function AdminPage() {
       </div>
 
       {loading ? (
-        <p className="text-sm text-[var(--muted-foreground)]">{t("loading")}</p>
+        <LoadingPage text={t("loading")} />
       ) : tab === "users" ? (
         <div className="overflow-auto">
           <table className="w-full text-sm">
