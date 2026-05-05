@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Trash2, ArrowUp, ArrowDown, Save, Eye, FileDown, FileText, FileCode, ZoomIn, ZoomOut, Maximize } from "lucide-react";
 import { LoadingPage } from "@/components/loading-page";
+import { DraggablePreviewScroll } from "@/components/draggable-preview-scroll";
 
 type Section = "basic" | "summary" | "education" | "workExperience" | "projects" | "skills" | "certificates" | "openSource" | "customSections";
 
@@ -133,9 +134,9 @@ export default function EditResumePage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem)] overflow-hidden bg-[var(--background)]">
+    <div className="relative left-1/2 -my-6 flex h-[calc(100vh-3.5rem)] w-[calc(100vw-2rem)] max-w-[1680px] -translate-x-1/2 overflow-hidden border-x border-[var(--border)] bg-[var(--background)]">
       {/* Sidebar Navigation */}
-      <nav className="flex w-56 shrink-0 flex-col border-r border-[var(--border)] overflow-y-auto p-4">
+      <nav className="flex w-48 shrink-0 flex-col border-r border-[var(--border)] overflow-y-auto p-4 xl:w-52 2xl:w-56">
         <div className="mb-6 space-y-1">
           <label className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">{t("labels.documentTitle")}</label>
           <Input
@@ -214,7 +215,7 @@ export default function EditResumePage() {
       </nav>
 
       {/* Editor Form Area */}
-      <div className="w-full max-w-xl shrink-0 border-r border-[var(--border)] overflow-y-auto p-6 bg-[var(--background)] shadow-sm z-10">
+      <div className="w-[28rem] shrink-0 border-r border-[var(--border)] overflow-y-auto bg-[var(--background)] p-5 shadow-sm z-10 xl:w-[32rem] 2xl:w-[35rem]">
         <FormSection section={activeSection} content={content} updateContent={updateContent} />
       </div>
 
@@ -235,8 +236,8 @@ export default function EditResumePage() {
         </div>
         
         {/* Preview Canvas */}
-        <div className="flex-1 overflow-y-auto p-8">
-          <div className="mx-auto flex justify-center pb-12">
+        <div className="min-h-0 flex-1 overflow-hidden p-4">
+          <div className="mx-auto flex h-full min-h-0 justify-center">
             <PreviewPanel content={content} templateName={templateName} />
           </div>
         </div>
@@ -1136,10 +1137,11 @@ function PreviewPanel({ content, templateName }: { content: ResumeContent; templ
 
   const pageCount = pages.length || 1;
   const totalScaledHeight = pageCount * 1123 + (pageCount - 1) * 24;
-  const marginCompensation = totalScaledHeight * (1 - currentScale);
+  const scaledWidth = 794 * currentScale;
+  const scaledHeight = totalScaledHeight * currentScale;
 
   return (
-    <div ref={containerRef} className="mx-auto flex flex-col items-center pb-12 w-full relative">
+    <div ref={containerRef} className="mx-auto flex h-full w-full flex-col items-center relative">
       {/* Hidden measurement iframe */}
       <iframe
         ref={hiddenRef}
@@ -1165,43 +1167,53 @@ function PreviewPanel({ content, templateName }: { content: ResumeContent; templ
         </Button>
       </div>
 
-      <div
-        className="flex flex-col items-center transition-transform duration-200"
-        style={{
-          transformOrigin: "top center",
-          transform: `scale(${currentScale})`,
-          marginBottom: `-${marginCompensation}px`,
-          gap: "24px",
-        }}
+      <DraggablePreviewScroll
+        className="min-h-0 w-full flex-1 overflow-x-hidden overflow-y-auto [scrollbar-gutter:stable]"
+        contentClassName="flex w-max min-w-full justify-center pb-12"
       >
-        {pages.map((pageHtml, idx) => (
+        <div
+          className="relative transition-[height,width] duration-200"
+          style={{ width: `${scaledWidth}px`, height: `${scaledHeight}px` }}
+        >
           <div
-            key={idx}
-            className="rounded-md bg-white shadow-2xl ring-1 ring-black/5 overflow-hidden"
-            style={{ width: "794px", height: "1123px" }}
+            className="flex flex-col items-center transition-transform duration-200"
+            style={{
+              width: "794px",
+              transformOrigin: "top left",
+              transform: `scale(${currentScale})`,
+              gap: "24px",
+            }}
           >
-            <iframe
-              srcDoc={rendersCompletePage ? pageHtml : wrapPreviewPage(pageHtml)}
-              className="h-full w-full border-0 pointer-events-none"
-              title={`Page ${idx + 1}`}
-              sandbox="allow-same-origin"
-            />
+            {pages.map((pageHtml, idx) => (
+              <div
+                key={idx}
+                className="rounded-md bg-white shadow-2xl ring-1 ring-black/5 overflow-hidden"
+                style={{ width: "794px", height: "1123px" }}
+              >
+                <iframe
+                  srcDoc={rendersCompletePage ? pageHtml : wrapPreviewPage(pageHtml)}
+                  className="h-full w-full border-0 pointer-events-none"
+                  title={`Page ${idx + 1}`}
+                  sandbox="allow-same-origin"
+                />
+              </div>
+            ))}
+            {pages.length === 0 && html && (
+              <div
+                className="rounded-md bg-white shadow-2xl ring-1 ring-black/5 overflow-hidden"
+                style={{ width: "794px", height: "1123px" }}
+              >
+                <iframe
+                  srcDoc={html}
+                  className="h-full w-full border-0 pointer-events-none"
+                  title="Resume Preview"
+                  sandbox="allow-same-origin"
+                />
+              </div>
+            )}
           </div>
-        ))}
-        {pages.length === 0 && html && (
-          <div
-            className="rounded-md bg-white shadow-2xl ring-1 ring-black/5 overflow-hidden"
-            style={{ width: "794px", height: "1123px" }}
-          >
-            <iframe
-              srcDoc={html}
-              className="h-full w-full border-0 pointer-events-none"
-              title="Resume Preview"
-              sandbox="allow-same-origin"
-            />
-          </div>
-        )}
-      </div>
+        </div>
+      </DraggablePreviewScroll>
     </div>
   );
 }

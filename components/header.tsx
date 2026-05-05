@@ -1,6 +1,6 @@
 "use client";
 
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "./language-switcher";
@@ -9,8 +9,13 @@ type NavUser = { id: string; email: string; nickname: string | null; role: strin
 
 export function Header() {
   const router = useRouter();
+  const pathname = usePathname();
   const t = useTranslations("header");
   const [user, setUser] = useState<NavUser | null>(null);
+  const isWorkbenchPage =
+    /^\/resumes\/[^/]+\/(edit|preview)$/.test(pathname) ||
+    pathname === "/templates/new" ||
+    /^\/templates\/[^/]+\/(edit|preview)$/.test(pathname);
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -26,7 +31,7 @@ export function Header() {
 
   return (
     <header className="border-b border-[var(--border)] bg-[var(--background)]">
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
+      <div className={`mx-auto flex h-14 items-center justify-between px-4 ${isWorkbenchPage ? "max-w-[1680px]" : "max-w-7xl"}`}>
         <Link href="/dashboard" className="text-lg font-bold">
           CareerFlow
         </Link>

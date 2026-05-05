@@ -5,8 +5,9 @@ import { useParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { CodeEditor } from "@/components/code-editor";
+import { DraggablePreviewScroll } from "@/components/draggable-preview-scroll";
 import { Loader2 } from "lucide-react";
 import { LoadingPage } from "@/components/loading-page";
 
@@ -56,9 +57,14 @@ export default function EditTemplatePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ templateHtml: html, templateCss: css }),
       })
-        .then((r) => r.text())
+        .then((r) => {
+          if (!r.ok) throw new Error("Preview failed");
+          return r.text();
+        })
         .then(setPreviewHtml)
-        .catch(() => {});
+        .catch(() => {
+          setPreviewHtml("<div style='display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:14px;'>预览加载失败，请检查登录状态</div>");
+        });
     }, 800);
   }, []);
 
@@ -94,9 +100,9 @@ export default function EditTemplatePage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem)] overflow-hidden">
+    <div className="relative left-1/2 -my-6 flex h-[calc(100vh-3.5rem)] w-[calc(100vw-2rem)] max-w-[1680px] -translate-x-1/2 overflow-hidden border-x border-[var(--border)] bg-[var(--background)]">
       {/* Left: Editor */}
-      <div className="w-[480px] shrink-0 overflow-y-auto border-r border-[var(--border)] p-6 space-y-5">
+      <div className="w-[32rem] shrink-0 overflow-y-auto border-r border-[var(--border)] p-5 space-y-5 2xl:w-[35rem]">
         <h1 className="text-2xl font-bold tracking-tight">{t("editor.title")}</h1>
 
         {error && (
@@ -126,30 +132,30 @@ export default function EditTemplatePage() {
 
         <div>
           <label className="mb-1.5 block text-sm font-medium">{t("editor.htmlCode")}</label>
-          <Textarea
+          <CodeEditor
             value={templateHtml}
-            onChange={(e) => setTemplateHtml(e.target.value)}
-            placeholder={t("editor.htmlPlaceholder")}
-            rows={12}
-            className="font-mono text-xs"
+            onChange={setTemplateHtml}
+            language="html"
+            placeholder={t.raw("editor.htmlPlaceholder")}
+            minHeight="280px"
           />
         </div>
 
         <div>
           <label className="mb-1.5 block text-sm font-medium">{t("editor.cssCode")}</label>
-          <Textarea
+          <CodeEditor
             value={templateCss}
-            onChange={(e) => setTemplateCss(e.target.value)}
+            onChange={setTemplateCss}
+            language="css"
             placeholder={t("editor.cssPlaceholder")}
-            rows={6}
-            className="font-mono text-xs"
+            minHeight="160px"
           />
         </div>
 
         {/* Variable Reference */}
         <div className="rounded-[var(--radius)] border border-[var(--border)] p-4">
           <h3 className="mb-2 text-sm font-semibold">{t("editor.variableReference")}</h3>
-          <p className="mb-3 text-xs text-[var(--muted-foreground)]">{t("editor.variableHint")}</p>
+          <p className="mb-3 text-xs text-[var(--muted-foreground)]">{t.raw("editor.variableHint")}</p>
           <div className="space-y-1">
             {VARIABLE_LIST.map((v) => (
               <div key={v} className="flex items-center gap-2 text-xs">
@@ -170,15 +176,18 @@ export default function EditTemplatePage() {
         <div className="border-b border-[var(--border)] bg-[var(--background)] px-4 py-2">
           <span className="text-sm font-medium text-[var(--muted-foreground)]">{t("editor.livePreview")}</span>
         </div>
-        <div className="flex-1 overflow-auto p-8 flex justify-center">
+        <DraggablePreviewScroll
+          className="flex-1"
+          contentClassName="flex w-max min-w-full justify-center p-4"
+        >
           <iframe
             srcDoc={previewHtml}
             className="bg-white shadow-lg rounded-md"
-            style={{ width: "794px", minHeight: "1123px", border: "none" }}
+            style={{ width: "794px", minHeight: "1123px", border: "none", pointerEvents: "none" }}
             title="Template Preview"
             sandbox="allow-same-origin"
           />
-        </div>
+        </DraggablePreviewScroll>
       </div>
     </div>
   );

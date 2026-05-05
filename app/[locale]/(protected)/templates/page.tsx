@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, Edit, Eye, FileText, Lock } from "lucide-react";
+import { Plus, Trash2, Edit, Eye, FileText, Lock, CopyPlus } from "lucide-react";
 import { LoadingPage } from "@/components/loading-page";
 
 type TemplateSummary = {
@@ -82,6 +82,12 @@ export default function TemplatesPage() {
                     {template.description}
                   </p>
                   <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href={`/templates/new?base=${template.id}`}>
+                        <CopyPlus className="mr-2 h-3 w-3" />
+                        {t("useAsBase")}
+                      </Link>
+                    </Button>
                     <Button variant="outline" size="sm" asChild>
                       <Link href={`/templates/${template.id}/preview`}>
                         <Eye className="mr-2 h-3 w-3" />

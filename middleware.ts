@@ -37,7 +37,7 @@ async function verifyTokenEdge(token: string): Promise<{ userId: string; email: 
 
 const intlMiddleware = createIntlMiddleware(routing);
 
-const protectedPaths = ["/dashboard", "/resumes", "/settings", "/admin"];
+const protectedPaths = ["/dashboard", "/resumes", "/templates", "/settings", "/admin"];
 const authPages = ["/login", "/register"];
 
 function stripLocale(pathname: string): string {

@@ -1,7 +1,17 @@
+"use client";
+
+import { usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 
 export function Footer() {
   const t = useTranslations("footer");
+  const pathname = usePathname();
+  const isWorkbenchPage =
+    /^\/resumes\/[^/]+\/(edit|preview)$/.test(pathname) ||
+    pathname === "/templates/new" ||
+    /^\/templates\/[^/]+\/(edit|preview)$/.test(pathname);
+
+  if (isWorkbenchPage) return null;
 
   return (
     <footer className="border-t border-[var(--border)] bg-[var(--background)]">

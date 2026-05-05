@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LoadingPage } from "@/components/loading-page";
 import { Button } from "@/components/ui/button";
+import { DraggablePreviewScroll } from "@/components/draggable-preview-scroll";
 import { FileDown, FileText, FileCode, ArrowLeft } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { ResumeContent } from "@/lib/resume-schema";
@@ -135,9 +136,9 @@ export default function PreviewPage() {
   if (loading) return <LoadingPage text={t("loadingPreview")} />;
 
   return (
-    <div className="min-h-screen bg-[var(--muted)]">
+    <div className="relative left-1/2 -my-6 flex h-[calc(100vh-3.5rem)] w-[calc(100vw-2rem)] max-w-[1680px] -translate-x-1/2 flex-col overflow-hidden border-x border-[var(--border)] bg-[var(--muted)]">
       {/* Export Toolbar */}
-      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[var(--border)] bg-[var(--background)]/90 px-6 py-3 backdrop-blur-sm">
+      <div className="z-10 flex shrink-0 items-center justify-between border-b border-[var(--border)] bg-[var(--background)]/90 px-6 py-3 backdrop-blur-sm">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" asChild>
             <Link href={`/resumes/${id}/edit`}>
@@ -194,7 +195,11 @@ export default function PreviewPage() {
       />
 
       {/* Paginated A4 pages */}
-      <div className="flex flex-col items-center py-8 px-4" style={{ gap: `${PAGE_GAP}px` }}>
+      <DraggablePreviewScroll
+        className="min-h-0 flex-1"
+        contentClassName="flex w-max min-w-full flex-col items-center px-4 py-8"
+        contentStyle={{ gap: `${PAGE_GAP}px` }}
+      >
         {pages.map((pageHtml, idx) => (
           <div
             key={idx}
@@ -203,7 +208,7 @@ export default function PreviewPage() {
           >
             <iframe
               srcDoc={rendersCompletePage ? pageHtml : wrapPageHtml(pageHtml)}
-              style={{ width: "100%", height: "100%", border: "none" }}
+              style={{ width: "100%", height: "100%", border: "none", pointerEvents: "none" }}
               title={`Page ${idx + 1}`}
               sandbox="allow-same-origin"
             />
@@ -216,13 +221,13 @@ export default function PreviewPage() {
           >
             <iframe
               srcDoc={html}
-              style={{ width: "100%", height: "100%", border: "none" }}
+              style={{ width: "100%", height: "100%", border: "none", pointerEvents: "none" }}
               title="Resume Preview"
               sandbox="allow-same-origin"
             />
           </div>
         )}
-      </div>
+      </DraggablePreviewScroll>
     </div>
   );
 }
