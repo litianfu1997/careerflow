@@ -137,7 +137,7 @@ export default function EditResumePage() {
       {/* Sidebar Navigation */}
       <nav className="flex w-56 shrink-0 flex-col border-r border-[var(--border)] overflow-y-auto p-4">
         <div className="mb-6 space-y-1">
-          <label className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Document Title</label>
+          <label className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">{t("labels.documentTitle")}</label>
           <Input
             value={title}
             onChange={(e) => {
@@ -173,7 +173,7 @@ export default function EditResumePage() {
           </select>
         </div>
         <div className="flex-1 space-y-1">
-          <label className="mb-2 block text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Sections</label>
+          <label className="mb-2 block text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">{t("labels.sections")}</label>
           {SECTION_KEYS.map((key) => (
             <button
               key={key}
@@ -297,7 +297,7 @@ function BasicForm({ content, updateContent }: { content: ResumeContent; updateC
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">{t("sections.basic")}</h2>
-        <p className="text-sm text-[var(--muted-foreground)]">Add your contact information.</p>
+        <p className="text-sm text-[var(--muted-foreground)]">{t("descriptions.basic")}</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         {fields.map((key) => {
@@ -334,7 +334,7 @@ function SummaryForm({ content, updateContent }: { content: ResumeContent; updat
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">{t("sections.summary")}</h2>
-          <p className="text-sm text-[var(--muted-foreground)]">A brief professional summary.</p>
+          <p className="text-sm text-[var(--muted-foreground)]">{t("descriptions.summary")}</p>
         </div>
         <Button variant="outline" size="sm" onClick={() => setShowGuide(!showGuide)}>
           {showGuide ? g("toggleHide") : g("toggleShow")}
@@ -424,7 +424,7 @@ function EducationForm({ content, updateContent }: { content: ResumeContent; upd
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">{t("sections.education")}</h2>
-          <p className="text-sm text-[var(--muted-foreground)]">Your academic background.</p>
+          <p className="text-sm text-[var(--muted-foreground)]">{t("descriptions.education")}</p>
         </div>
         <Button onClick={add} size="sm">
           <Plus className="mr-2 h-4 w-4" /> {t("add")}
@@ -434,7 +434,7 @@ function EducationForm({ content, updateContent }: { content: ResumeContent; upd
         {items.map((item, i) => (
           <Card key={item.id} className="relative shadow-sm transition-all hover:shadow-md">
             <CardHeader className="flex flex-row items-center justify-between p-4 pb-2">
-              <CardTitle className="text-base font-semibold">{item.school || `Education #${i + 1}`}</CardTitle>
+              <CardTitle className="text-base font-semibold">{item.school || t("placeholders.educationTitle", { index: i + 1 })}</CardTitle>
               <div className="flex items-center gap-1">
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-[var(--muted-foreground)]" onClick={() => move(i, -1)}>
                   <ArrowUp className="h-4 w-4" />
@@ -519,7 +519,7 @@ function WorkExperienceForm({ content, updateContent }: { content: ResumeContent
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">{t("sections.workExperience")}</h2>
-          <p className="text-sm text-[var(--muted-foreground)]">Your professional career timeline.</p>
+          <p className="text-sm text-[var(--muted-foreground)]">{t("descriptions.workExperience")}</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={() => setShowGuide(!showGuide)}>
@@ -626,7 +626,7 @@ function WorkExperienceForm({ content, updateContent }: { content: ResumeContent
               </div>
               <div className="sm:col-span-2">
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.highlights")}</label>
-                <Textarea value={item.highlights.join("\n")} onChange={(e) => update(i, "highlights", e.target.value.split("\n").filter(Boolean))} rows={4} placeholder="Enter each highlight on a new line..." />
+                <Textarea value={item.highlights.join("\n")} onChange={(e) => update(i, "highlights", e.target.value.split("\n").filter(Boolean))} rows={4} placeholder={t("placeholders.highlights")} />
               </div>
             </CardContent>
           </Card>
@@ -671,7 +671,7 @@ function ProjectsForm({ content, updateContent }: { content: ResumeContent; upda
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">{t("sections.projects")}</h2>
-          <p className="text-sm text-[var(--muted-foreground)]">Showcase your notable projects.</p>
+          <p className="text-sm text-[var(--muted-foreground)]">{t("descriptions.projects")}</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={() => setShowGuide(!showGuide)}>
@@ -777,7 +777,7 @@ function ProjectsForm({ content, updateContent }: { content: ResumeContent; upda
               </div>
               <div className="sm:col-span-2">
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.url")}</label>
-                <Input type="url" value={item.url} onChange={(e) => update(i, "url", e.target.value)} placeholder="https://" />
+                <Input type="url" value={item.url} onChange={(e) => update(i, "url", e.target.value)} placeholder={t("placeholders.url")} />
               </div>
               <div className="sm:col-span-2">
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.description")}</label>
@@ -785,7 +785,7 @@ function ProjectsForm({ content, updateContent }: { content: ResumeContent; upda
               </div>
               <div className="sm:col-span-2">
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.highlights")}</label>
-                <Textarea value={item.highlights.join("\n")} onChange={(e) => update(i, "highlights", e.target.value.split("\n").filter(Boolean))} rows={4} placeholder="Enter each highlight on a new line..." />
+                <Textarea value={item.highlights.join("\n")} onChange={(e) => update(i, "highlights", e.target.value.split("\n").filter(Boolean))} rows={4} placeholder={t("placeholders.highlights")} />
               </div>
             </CardContent>
           </Card>
@@ -818,7 +818,7 @@ function SkillsForm({ content, updateContent }: { content: ResumeContent; update
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">{t("sections.skills")}</h2>
-          <p className="text-sm text-[var(--muted-foreground)]">Your technical and soft skills.</p>
+          <p className="text-sm text-[var(--muted-foreground)]">{t("descriptions.skills")}</p>
         </div>
         <Button onClick={add} size="sm">
           <Plus className="mr-2 h-4 w-4" /> {t("addCategory")}
@@ -844,7 +844,7 @@ function SkillsForm({ content, updateContent }: { content: ResumeContent; update
                   value={item.skills.join(", ")}
                   onChange={(e) => update(i, "skills", e.target.value.split(",").map((s) => s.trim()).filter(Boolean))}
                   rows={2}
-                  placeholder="React, Node.js, TypeScript..."
+                  placeholder={t("placeholders.skills")}
                 />
               </div>
             </CardContent>
@@ -878,7 +878,7 @@ function CertificatesForm({ content, updateContent }: { content: ResumeContent; 
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">{t("certificatesTitle")}</h2>
-          <p className="text-sm text-[var(--muted-foreground)]">Awards, certifications, and licenses.</p>
+          <p className="text-sm text-[var(--muted-foreground)]">{t("descriptions.certificates")}</p>
         </div>
         <Button onClick={add} size="sm">
           <Plus className="mr-2 h-4 w-4" /> {t("add")}
@@ -908,7 +908,7 @@ function CertificatesForm({ content, updateContent }: { content: ResumeContent; 
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.url")}</label>
-                <Input type="url" value={item.url} onChange={(e) => update(i, "url", e.target.value)} placeholder="https://" />
+                <Input type="url" value={item.url} onChange={(e) => update(i, "url", e.target.value)} placeholder={t("placeholders.url")} />
               </div>
             </CardContent>
           </Card>
@@ -941,7 +941,7 @@ function OpenSourceForm({ content, updateContent }: { content: ResumeContent; up
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">{t("sections.openSource")}</h2>
-          <p className="text-sm text-[var(--muted-foreground)]">Your open-source contributions.</p>
+          <p className="text-sm text-[var(--muted-foreground)]">{t("descriptions.openSource")}</p>
         </div>
         <Button onClick={add} size="sm">
           <Plus className="mr-2 h-4 w-4" /> {t("add")}
@@ -967,7 +967,7 @@ function OpenSourceForm({ content, updateContent }: { content: ResumeContent; up
               </div>
               <div className="sm:col-span-2">
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.url")}</label>
-                <Input type="url" value={item.url} onChange={(e) => update(i, "url", e.target.value)} placeholder="https://" />
+                <Input type="url" value={item.url} onChange={(e) => update(i, "url", e.target.value)} placeholder={t("placeholders.url")} />
               </div>
               <div className="sm:col-span-2">
                 <label className="mb-1 block text-xs font-medium text-[var(--muted-foreground)]">{t("fields.description")}</label>
@@ -1004,7 +1004,7 @@ function CustomSectionsForm({ content, updateContent }: { content: ResumeContent
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">{t("sections.customSections")}</h2>
-          <p className="text-sm text-[var(--muted-foreground)]">Add any additional information here.</p>
+          <p className="text-sm text-[var(--muted-foreground)]">{t("descriptions.customSections")}</p>
         </div>
         <Button onClick={add} size="sm">
           <Plus className="mr-2 h-4 w-4" /> {t("add")}
@@ -1045,6 +1045,7 @@ function PreviewPanel({ content, templateName }: { content: ResumeContent; templ
   const [userScale, setUserScale] = useState<number | null>(null);
 
   const currentScale = userScale !== null ? userScale : autoScale;
+  const rendersCompletePage = templateName === "sidebar" || templateName === "compact";
 
   useEffect(() => {
     fetch("/api/render-preview", {
@@ -1060,6 +1061,10 @@ function PreviewPanel({ content, templateName }: { content: ResumeContent; templ
   // Paginate content when html changes
   useEffect(() => {
     if (!html) return;
+    if (rendersCompletePage) {
+      setPages([html]);
+      return;
+    }
     // Use a small delay to let the hidden iframe render
     const timer = setTimeout(() => {
       const iframe = hiddenRef.current;
@@ -1106,7 +1111,7 @@ function PreviewPanel({ content, templateName }: { content: ResumeContent; templ
       setPages(pageDivs.length > 0 ? pageDivs : [body.innerHTML]);
     }, 100);
     return () => clearTimeout(timer);
-  }, [html]);
+  }, [html, rendersCompletePage]);
 
   useEffect(() => {
     const updateScale = () => {
@@ -1176,7 +1181,7 @@ function PreviewPanel({ content, templateName }: { content: ResumeContent; templ
             style={{ width: "794px", height: "1123px" }}
           >
             <iframe
-              srcDoc={wrapPreviewPage(pageHtml)}
+              srcDoc={rendersCompletePage ? pageHtml : wrapPreviewPage(pageHtml)}
               className="h-full w-full border-0 pointer-events-none"
               title={`Page ${idx + 1}`}
               sandbox="allow-same-origin"

@@ -39,3 +39,4 @@ prisma/*.db
 # storage
 storage/
 
+*.log
