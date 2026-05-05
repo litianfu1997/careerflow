@@ -21,8 +21,10 @@ export default function PreviewPage() {
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState<string | null>(null);
   const [title, setTitle] = useState("");
+  const [templateName, setTemplateName] = useState("clean-cn");
   const [pages, setPages] = useState<string[]>([]);
   const hiddenRef = useRef<HTMLIFrameElement>(null);
+  const rendersCompletePage = templateName === "sidebar" || templateName === "compact";
 
   useEffect(() => {
     fetch(`/api/resumes/${id}`)
@@ -33,10 +35,12 @@ export default function PreviewPage() {
           const content: ResumeContent = typeof d.resume.contentJson === "string"
             ? JSON.parse(d.resume.contentJson)
             : d.resume.contentJson;
+          const selectedTemplateName = d.resume.template?.name || "clean-cn";
+          setTemplateName(selectedTemplateName);
           return fetch("/api/render-preview", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ content, templateName: d.resume.template?.name || "clean-cn" }),
+            body: JSON.stringify({ content, templateName: selectedTemplateName }),
           });
         }
       })
@@ -48,6 +52,11 @@ export default function PreviewPage() {
 
   // After hidden iframe loads, paginate the content into A4 pages
   const handleMeasure = useCallback(() => {
+    if (rendersCompletePage) {
+      setPages(html ? [html] : []);
+      return;
+    }
+
     const iframe = hiddenRef.current;
     if (!iframe) return;
     const doc = iframe.contentDocument;
@@ -96,7 +105,7 @@ export default function PreviewPage() {
     }
 
     setPages(pageDivs.length > 0 ? pageDivs : [body.innerHTML]);
-  }, []);
+  }, [html, rendersCompletePage]);
 
   async function handleExport(format: "pdf" | "markdown" | "json") {
     setExporting(format);
@@ -193,7 +202,7 @@ export default function PreviewPage() {
             style={{ width: `${A4_WIDTH}px`, height: `${A4_HEIGHT}px`, borderRadius: "2px" }}
           >
             <iframe
-              srcDoc={wrapPageHtml(pageHtml)}
+              srcDoc={rendersCompletePage ? pageHtml : wrapPageHtml(pageHtml)}
               style={{ width: "100%", height: "100%", border: "none" }}
               title={`Page ${idx + 1}`}
               sandbox="allow-same-origin"

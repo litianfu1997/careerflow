@@ -288,6 +288,27 @@
           "highlights": "Built with React Native for both platforms, improving dev efficiency by 60%\nIntegrated HealthKit and Google Fit for automatic health data sync\nSurpassed [number] million downloads in the first month, 4.8 App Store rating"
         }
       }
+    },
+    "labels": {
+      "documentTitle": "Document Title",
+      "sections": "Sections"
+    },
+    "descriptions": {
+      "basic": "Add your contact information.",
+      "summary": "A brief professional summary.",
+      "education": "Your academic background.",
+      "workExperience": "Your work history and achievements.",
+      "projects": "Projects that show your impact.",
+      "skills": "Your technical and soft skills.",
+      "certificates": "Awards, certifications, and licenses.",
+      "openSource": "Your open-source contributions.",
+      "customSections": "Add any additional information here."
+    },
+    "placeholders": {
+      "educationTitle": "Education #{index}",
+      "highlights": "Enter each highlight on a new line...",
+      "skills": "React, Node.js, TypeScript...",
+      "url": "https://"
     }
   },
   "patches": {
@@ -315,7 +336,7 @@
   "settings": {
     "title": "API Key Management",
     "description": "Create API keys for external agents to access your resumes via REST API.",
-    "created": "API Key created! Copy it now - it won't be shown again.",
+    "created": "Created",
     "dismiss": "Dismiss",
     "createNewKey": "Create New Key",
     "name": "Name",
@@ -328,7 +349,6 @@
     "revoke": "Revoke",
     "confirmRevoke": "Revoke this API key? This cannot be undone.",
     "lastUsed": "Last used",
-    "created": "Created",
     "scopesList": {
       "resume:read": "Read resumes",
       "resume:write_patch": "Submit patches",

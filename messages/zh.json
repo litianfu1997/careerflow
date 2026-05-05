@@ -288,6 +288,27 @@
           "highlights": "使用 React Native 开发，一套代码覆盖双端，开发效率提升 60%\n集成 HealthKit 和 Google Fit，实现健康数据自动同步\n上线首月下载量突破 [number] 万，App Store 评分 4.8"
         }
       }
+    },
+    "labels": {
+      "documentTitle": "文档标题",
+      "sections": "模块"
+    },
+    "descriptions": {
+      "basic": "填写你的联系方式。",
+      "summary": "简要介绍你的职业背景。",
+      "education": "填写你的教育背景。",
+      "workExperience": "填写你的工作经历与成果。",
+      "projects": "填写能体现你贡献的项目经历。",
+      "skills": "填写你的专业技能与软技能。",
+      "certificates": "填写奖项、证书与资质。",
+      "openSource": "填写你的开源贡献。",
+      "customSections": "添加其他补充信息。"
+    },
+    "placeholders": {
+      "educationTitle": "教育经历 #{index}",
+      "highlights": "每行输入一条亮点...",
+      "skills": "React, Node.js, TypeScript...",
+      "url": "https://"
     }
   },
   "patches": {
@@ -315,7 +336,7 @@
   "settings": {
     "title": "API 密钥管理",
     "description": "创建 API 密钥，让外部智能体通过 REST API 访问您的简历。",
-    "created": "API 密钥已创建！请立即复制，之后将不再显示。",
+    "created": "创建于",
     "dismiss": "关闭",
     "createNewKey": "创建新密钥",
     "name": "名称",
@@ -328,7 +349,6 @@
     "revoke": "撤销",
     "confirmRevoke": "确定撤销此 API 密钥？此操作不可恢复。",
     "lastUsed": "最后使用",
-    "created": "创建于",
     "scopesList": {
       "resume:read": "读取简历",
       "resume:write_patch": "提交补丁",
