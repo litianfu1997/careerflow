@@ -24,11 +24,34 @@ export default function PatchesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/resumes/${id}/patches`)
-      .then((r) => r.json())
-      .then((d) => setPatches(d.patches || []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    let cancelled = false;
+
+    async function loadPatches() {
+      setLoading(true);
+      try {
+        const allPatches: Patch[] = [];
+        let cursor: string | null = null;
+
+        do {
+          const url = new URL(`/api/resumes/${id}/patches`, window.location.origin);
+          if (cursor) url.searchParams.set("cursor", cursor);
+          const res = await fetch(url);
+          const data = await res.json();
+          allPatches.push(...(data.patches || []));
+          cursor = data.nextCursor || null;
+        } while (cursor && !cancelled);
+
+        if (!cancelled) setPatches(allPatches);
+      } catch {
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadPatches();
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   async function applyPatch(patchId: string) {

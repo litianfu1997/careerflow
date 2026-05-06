@@ -94,7 +94,7 @@ function getChild(container: unknown, segment: string): unknown {
 
 export function applyPatch(content: ResumeContent, operations: PatchOperation[]): ResumeContent {
   assertPatchOperations(operations);
-  let result: unknown = JSON.parse(JSON.stringify(content));
+  let result: unknown = structuredClone(content);
 
   for (const op of operations) {
     const parts = parsePointerPath(op.path);

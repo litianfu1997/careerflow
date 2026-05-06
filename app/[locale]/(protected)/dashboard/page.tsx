@@ -1,30 +1,26 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Plus, Clock, CheckCircle, FileEdit } from "lucide-react";
-import { LoadingPage } from "@/components/loading-page";
+import { getAuthUser } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
-type ResumeSummary = {
-  id: string; title: string; status: string; updatedAt: string;
-};
+export default async function DashboardPage() {
+  const t = await getTranslations("dashboard");
+  const auth = await getAuthUser();
 
-export default function DashboardPage() {
-  const t = useTranslations("dashboard");
-  const [resumes, setResumes] = useState<ResumeSummary[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/resumes")
-      .then((r) => r.json())
-      .then((d) => setResumes(d.resumes || []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+  const resumes = auth
+    ? await prisma.resume.findMany({
+        where: { userId: auth.userId },
+        orderBy: { updatedAt: "desc" },
+        select: {
+          id: true, title: true, status: true, updatedAt: true,
+        },
+        take: 10,
+      })
+    : [];
 
   return (
     <div className="space-y-8">
@@ -73,9 +69,7 @@ export default function DashboardPage() {
 
       <div className="space-y-4">
         <h2 className="text-xl font-semibold tracking-tight">{t("recentResumes")}</h2>
-        {loading ? (
-          <LoadingPage text={t("loading")} />
-        ) : resumes.length === 0 ? (
+        {resumes.length === 0 ? (
           <div className="flex h-32 flex-col items-center justify-center rounded-[var(--radius)] border border-dashed border-[var(--border)] text-center">
             <p className="text-sm text-[var(--muted-foreground)]">{t("noResumes")}</p>
             <Button variant="link" asChild>

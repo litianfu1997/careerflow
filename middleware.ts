@@ -61,19 +61,20 @@ export async function middleware(request: NextRequest) {
     return new URL(`/${locale}${path}`, request.url);
   }
 
-  if (authPages.some((p) => stripped.startsWith(p)) && token) {
-    const payload = await verifyTokenEdge(token);
-    if (payload) {
-      return NextResponse.redirect(localeUrl("/dashboard"));
-    }
+  const isAuthPage = authPages.some((p) => stripped.startsWith(p));
+  const isProtectedPath = protectedPaths.some((p) => stripped.startsWith(p));
+
+  let payload: { userId: string; email: string; role: string } | null = null;
+  if ((isAuthPage || isProtectedPath) && token) {
+    payload = await verifyTokenEdge(token);
   }
 
-  if (protectedPaths.some((p) => stripped.startsWith(p))) {
-    if (!token) {
-      return NextResponse.redirect(localeUrl("/login"));
-    }
-    const payload = await verifyTokenEdge(token);
-    if (!payload) {
+  if (isAuthPage && payload) {
+    return NextResponse.redirect(localeUrl("/dashboard"));
+  }
+
+  if (isProtectedPath) {
+    if (!token || !payload) {
       const response = NextResponse.redirect(localeUrl("/login"));
       response.cookies.delete("careerflow_token");
       return response;

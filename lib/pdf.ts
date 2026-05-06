@@ -1,14 +1,34 @@
 import { renderResumeToHTML } from "./resume-renderer";
 import type { ResumeContent } from "./resume-schema";
+import type { Browser } from "playwright";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let _browser: any = null;
+let _browser: Browser | null = null;
+let _browserLaunching: Promise<Browser> | null = null;
 
-async function getBrowser() {
-  if (_browser) return _browser;
-  const { chromium } = await import("playwright");
-  _browser = await chromium.launch({ headless: true });
-  return _browser;
+async function getBrowser(): Promise<Browser> {
+  if (_browser && _browser.isConnected()) return _browser;
+  if (_browserLaunching) return _browserLaunching;
+
+  _browserLaunching = (async () => {
+    try {
+      const { chromium } = await import("playwright");
+      const browser = await chromium.launch({
+        headless: true,
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-gpu",
+          "--disable-dev-shm-usage",
+        ],
+      });
+      _browser = browser;
+      return browser;
+    } finally {
+      _browserLaunching = null;
+    }
+  })();
+
+  return _browserLaunching;
 }
 
 export async function generatePDF(content: ResumeContent, templateName: string): Promise<Buffer> {
@@ -25,6 +45,6 @@ export async function generatePDF(content: ResumeContent, templateName: string):
     });
     return Buffer.from(pdf);
   } finally {
-    await page.close();
+    await page.close().catch(() => {});
   }
 }

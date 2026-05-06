@@ -19,6 +19,7 @@ const builtinTemplates: Record<string, (content: ResumeContent) => string> = {
 
 const templateCache = new Map<string, { html: string; css: string | null; fetchedAt: number }>();
 const CACHE_TTL = 60_000;
+const MAX_TEMPLATE_CACHE_SIZE = 50;
 
 export async function renderResumeToHTML(ctx: RenderContext): Promise<string> {
   const { content, templateName } = ctx;
@@ -42,6 +43,18 @@ export async function renderResumeToHTML(ctx: RenderContext): Promise<string> {
       templateHtml = dbTemplate.templateHtml;
       templateCss = dbTemplate.templateCss;
       templateCache.set(templateName, { html: templateHtml, css: templateCss, fetchedAt: Date.now() });
+      if (templateCache.size > MAX_TEMPLATE_CACHE_SIZE) {
+        const now = Date.now();
+        for (const [k, v] of templateCache) {
+          if (now - v.fetchedAt > CACHE_TTL) templateCache.delete(k);
+        }
+        if (templateCache.size > MAX_TEMPLATE_CACHE_SIZE) {
+          const entries = [...templateCache.entries()].sort((a, b) => a[1].fetchedAt - b[1].fetchedAt);
+          for (let i = 0; i < entries.length - MAX_TEMPLATE_CACHE_SIZE; i++) {
+            templateCache.delete(entries[i][0]);
+          }
+        }
+      }
     }
   }
 

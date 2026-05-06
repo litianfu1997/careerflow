@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAuthUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { writeAuditLog } from "@/lib/audit";
+import { invalidateApiKeyCache } from "@/lib/api-key";
 
 export async function DELETE(
   _req: Request,
@@ -17,6 +18,7 @@ export async function DELETE(
   }
 
   await prisma.apiKey.update({ where: { id }, data: { status: "revoked" } });
+  invalidateApiKeyCache(id);
 
   await writeAuditLog({
     userId: auth.userId,

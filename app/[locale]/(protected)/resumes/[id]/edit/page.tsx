@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -211,6 +211,16 @@ export default function EditResumePage() {
               </Button>
             </div>
           </div>
+          <div className="pt-2 mt-2 border-t border-red-200">
+            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8 text-red-600 hover:bg-red-50 hover:text-red-700" onClick={async () => {
+              if (!confirm(t("confirmDeleteResume"))) return;
+              const res = await fetch(`/api/resumes/${id}`, { method: "DELETE" });
+              if (res.ok) router.push("/resumes");
+            }}>
+              <Trash2 className="mr-2 h-3.5 w-3.5" />
+              {t("deleteResume")}
+            </Button>
+          </div>
         </div>
       </nav>
 
@@ -276,7 +286,7 @@ const BASIC_FIELD_CONFIG: Record<string, {
   linkedin:     { type: "url", placeholderKey: "linkedinPlaceholder" },
 };
 
-function BasicForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
+const BasicForm = React.memo(function BasicForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
   const t = useTranslations("editor");
   const b = content.basic;
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -323,9 +333,9 @@ function BasicForm({ content, updateContent }: { content: ResumeContent; updateC
       </div>
     </div>
   );
-}
+});
 
-function SummaryForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
+const SummaryForm = React.memo(function SummaryForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
   const t = useTranslations("editor");
   const g = useTranslations("editor.summaryGuide");
   const [showGuide, setShowGuide] = useState(true);
@@ -391,9 +401,9 @@ function SummaryForm({ content, updateContent }: { content: ResumeContent; updat
       )}
     </div>
   );
-}
+});
 
-function EducationForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
+const EducationForm = React.memo(function EducationForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
   const t = useTranslations("editor");
   const items = content.education;
   function add() {
@@ -483,9 +493,9 @@ function EducationForm({ content, updateContent }: { content: ResumeContent; upd
       </div>
     </div>
   );
-}
+});
 
-function WorkExperienceForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
+const WorkExperienceForm = React.memo(function WorkExperienceForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
   const t = useTranslations("editor");
   const g = useTranslations("editor.workGuide");
   const [showGuide, setShowGuide] = useState(true);
@@ -635,9 +645,9 @@ function WorkExperienceForm({ content, updateContent }: { content: ResumeContent
       </div>
     </div>
   );
-}
+});
 
-function ProjectsForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
+const ProjectsForm = React.memo(function ProjectsForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
   const t = useTranslations("editor");
   const g = useTranslations("editor.projectGuide");
   const [showGuide, setShowGuide] = useState(true);
@@ -794,9 +804,9 @@ function ProjectsForm({ content, updateContent }: { content: ResumeContent; upda
       </div>
     </div>
   );
-}
+});
 
-function SkillsForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
+const SkillsForm = React.memo(function SkillsForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
   const t = useTranslations("editor");
   const items = content.skills;
   function add() {
@@ -854,9 +864,9 @@ function SkillsForm({ content, updateContent }: { content: ResumeContent; update
       </div>
     </div>
   );
-}
+});
 
-function CertificatesForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
+const CertificatesForm = React.memo(function CertificatesForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
   const t = useTranslations("editor");
   const items = content.certificates;
   function add() {
@@ -917,9 +927,9 @@ function CertificatesForm({ content, updateContent }: { content: ResumeContent; 
       </div>
     </div>
   );
-}
+});
 
-function OpenSourceForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
+const OpenSourceForm = React.memo(function OpenSourceForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
   const t = useTranslations("editor");
   const items = content.openSource;
   function add() {
@@ -980,9 +990,9 @@ function OpenSourceForm({ content, updateContent }: { content: ResumeContent; up
       </div>
     </div>
   );
-}
+});
 
-function CustomSectionsForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
+const CustomSectionsForm = React.memo(function CustomSectionsForm({ content, updateContent }: { content: ResumeContent; updateContent: (u: (p: ResumeContent) => ResumeContent) => void }) {
   const t = useTranslations("editor");
   const items = content.customSections;
   function add() {
@@ -1035,9 +1045,9 @@ function CustomSectionsForm({ content, updateContent }: { content: ResumeContent
       </div>
     </div>
   );
-}
+});
 
-function PreviewPanel({ content, templateName }: { content: ResumeContent; templateName: string }) {
+const PreviewPanel = React.memo(function PreviewPanel({ content, templateName }: { content: ResumeContent; templateName: string }) {
   const [html, setHtml] = useState("");
   const [pages, setPages] = useState<string[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -1049,14 +1059,17 @@ function PreviewPanel({ content, templateName }: { content: ResumeContent; templ
   const rendersCompletePage = templateName === "sidebar" || templateName === "compact";
 
   useEffect(() => {
-    fetch("/api/render-preview", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content, templateName }),
-    })
-      .then((r) => r.text())
-      .then(setHtml)
-      .catch(() => {});
+    const timer = setTimeout(() => {
+      fetch("/api/render-preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content, templateName }),
+      })
+        .then((r) => r.text())
+        .then(setHtml)
+        .catch(() => {});
+    }, 300);
+    return () => clearTimeout(timer);
   }, [content, templateName]);
 
   // Paginate content when html changes
@@ -1216,7 +1229,7 @@ function PreviewPanel({ content, templateName }: { content: ResumeContent; templ
       </DraggablePreviewScroll>
     </div>
   );
-}
+});
 
 function wrapPreviewPage(body: string): string {
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>

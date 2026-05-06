@@ -16,5 +16,8 @@ export async function GET() {
     orderBy: [{ isBuiltin: "desc" }, { createdAt: "asc" }],
   });
 
-  return NextResponse.json({ templates });
+  return NextResponse.json(
+    { templates },
+    { headers: { "Cache-Control": "private, no-store" } },
+  );
 }

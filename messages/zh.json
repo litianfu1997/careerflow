@@ -144,6 +144,8 @@
     "up": "上移",
     "down": "下移",
     "delete": "删除",
+    "deleteResume": "删除简历",
+    "confirmDeleteResume": "确定删除这份简历吗？此操作无法撤销。",
     "fields": {
       "name": "姓名",
       "email": "邮箱",

@@ -1,44 +1,26 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, Plus, Copy, Eye, Trash2, Clock, FileText } from "lucide-react";
-import { LoadingPage } from "@/components/loading-page";
+import { Clock, FileText, Plus } from "lucide-react";
+import { getAuthUser } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { ResumesActions } from "./resumes-actions";
 
-type ResumeSummary = {
-  id: string; title: string; status: string; updatedAt: string; createdAt: string;
-};
+export default async function ResumesPage() {
+  const t = await getTranslations("resumes");
+  const auth = await getAuthUser();
 
-export default function ResumesPage() {
-  const t = useTranslations("resumes");
-  const [resumes, setResumes] = useState<ResumeSummary[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/resumes")
-      .then((r) => r.json())
-      .then((d) => setResumes(d.resumes || []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
-
-  async function deleteResume(id: string) {
-    if (!confirm(t("confirmDelete"))) return;
-    await fetch(`/api/resumes/${id}`, { method: "DELETE" });
-    setResumes((prev) => prev.filter((r) => r.id !== id));
-  }
-
-  async function duplicateResume(id: string) {
-    const res = await fetch(`/api/resumes/${id}/duplicate`, { method: "POST" });
-    if (res.ok) {
-      const { resume } = await res.json();
-      setResumes((prev) => [resume, ...prev]);
-    }
-  }
+  const resumes = auth
+    ? await prisma.resume.findMany({
+        where: { userId: auth.userId },
+        orderBy: { updatedAt: "desc" },
+        select: {
+          id: true, title: true, status: true, updatedAt: true, createdAt: true,
+        },
+      })
+    : [];
 
   return (
     <div className="space-y-6">
@@ -55,9 +37,7 @@ export default function ResumesPage() {
         </Button>
       </div>
 
-      {loading ? (
-        <LoadingPage text={t("loading")} />
-      ) : resumes.length === 0 ? (
+      {resumes.length === 0 ? (
         <Card className="flex flex-col items-center justify-center border-dashed py-12 text-center">
           <div className="mb-4 rounded-full bg-[var(--muted)] p-3">
             <FileText className="h-6 w-6 text-[var(--muted-foreground)]" />
@@ -91,21 +71,7 @@ export default function ResumesPage() {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" onClick={() => duplicateResume(r.id)} title={t("duplicate")}>
-                    <Copy className="mr-2 h-3 w-3" />
-                    <span className="hidden sm:inline">{t("duplicate")}</span>
-                  </Button>
-                  <Button variant="outline" size="sm" asChild title={t("preview")}>
-                    <Link href={`/resumes/${r.id}/preview`}>
-                      <Eye className="mr-2 h-3 w-3" />
-                      <span className="hidden sm:inline">{t("preview")}</span>
-                    </Link>
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => deleteResume(r.id)} title={t("delete")} className="text-red-600 hover:bg-red-50 hover:text-red-600">
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
+                <ResumesActions resumeId={r.id} t={{ duplicate: t("duplicate"), preview: t("preview"), delete: t("delete"), confirmDelete: t("confirmDelete") }} />
               </CardContent>
             </Card>
           ))}
