@@ -17,17 +17,44 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-    const endpoint = tab === "users" ? "/api/admin/users" : tab === "resumes" ? "/api/admin/resumes" : "/api/admin/templates";
-    fetch(endpoint)
-      .then((r) => r.json())
-      .then((d) => {
-        if (tab === "users") setUsers(d.users || []);
-        else if (tab === "resumes") setResumes(d.resumes || []);
-        else setTemplates(d.templates || []);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    let cancelled = false;
+
+    async function loadTab() {
+      setLoading(true);
+      try {
+        if (tab === "users") {
+          const allUsers: UserView[] = [];
+          let cursor: string | null = null;
+
+          do {
+            const url = new URL("/api/admin/users", window.location.origin);
+            if (cursor) url.searchParams.set("cursor", cursor);
+            const res = await fetch(url);
+            const data = await res.json();
+            allUsers.push(...(data.users || []));
+            cursor = data.nextCursor || null;
+          } while (cursor && !cancelled);
+
+          if (!cancelled) setUsers(allUsers);
+          return;
+        }
+
+        const endpoint = tab === "resumes" ? "/api/admin/resumes" : "/api/admin/templates";
+        const res = await fetch(endpoint);
+        const data = await res.json();
+        if (cancelled) return;
+        if (tab === "resumes") setResumes(data.resumes || []);
+        else setTemplates(data.templates || []);
+      } catch {
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadTab();
+    return () => {
+      cancelled = true;
+    };
   }, [tab]);
 
   return (

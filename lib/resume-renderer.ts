@@ -19,6 +19,7 @@ const builtinTemplates: Record<string, (content: ResumeContent) => string> = {
 
 const templateCache = new Map<string, { html: string; css: string | null; fetchedAt: number }>();
 const CACHE_TTL = 60_000;
+const MAX_TEMPLATE_CACHE_SIZE = 50;
 
 export async function renderResumeToHTML(ctx: RenderContext): Promise<string> {
   const { content, templateName } = ctx;
@@ -42,6 +43,18 @@ export async function renderResumeToHTML(ctx: RenderContext): Promise<string> {
       templateHtml = dbTemplate.templateHtml;
       templateCss = dbTemplate.templateCss;
       templateCache.set(templateName, { html: templateHtml, css: templateCss, fetchedAt: Date.now() });
+      if (templateCache.size > MAX_TEMPLATE_CACHE_SIZE) {
+        const now = Date.now();
+        for (const [k, v] of templateCache) {
+          if (now - v.fetchedAt > CACHE_TTL) templateCache.delete(k);
+        }
+        if (templateCache.size > MAX_TEMPLATE_CACHE_SIZE) {
+          const entries = [...templateCache.entries()].sort((a, b) => a[1].fetchedAt - b[1].fetchedAt);
+          for (let i = 0; i < entries.length - MAX_TEMPLATE_CACHE_SIZE; i++) {
+            templateCache.delete(entries[i][0]);
+          }
+        }
+      }
     }
   }
 
@@ -76,9 +89,10 @@ function cleanCnTemplate(c: ResumeContent): string {
   const b = c.basic;
   const sections: string[] = [];
 
-  if (b.name || b.email || b.phone) {
+  if (b.name || b.email || b.phone || b.avatar) {
     sections.push(`
       <div style="text-align:center;margin-bottom:20px;">
+        ${b.avatar ? `<div style="margin-bottom:12px;">${avatarImg(b.avatar, 100, "display:inline-block;", b.avatarStyle)}</div>` : ""}
         <h1 style="margin:0;font-size:24px;font-weight:bold;">${esc(b.name)}</h1>
         <p style="margin:4px 0 0;color:#666;font-size:13px;">
           ${[b.email, b.phone, b.location, b.website, b.github, b.linkedin].filter(Boolean).map(esc).join(" | ")}
@@ -179,6 +193,7 @@ function techCnTemplate(c: ResumeContent): string {
 
   sections.push(`
     <div style="text-align:center;margin-bottom:16px;border-bottom:2px solid #2563eb;padding-bottom:12px;">
+      ${b.avatar ? `<div style="margin-bottom:10px;">${avatarImg(b.avatar, 100, "display:inline-block;", b.avatarStyle)}</div>` : ""}
       <h1 style="margin:0;font-size:22px;font-weight:bold;">${esc(b.name)}</h1>
       <p style="margin:4px 0 0;color:#2563eb;font-size:12px;">
         ${[b.email, b.phone, b.location, b.github, b.website, b.linkedin].filter(Boolean).map(esc).join(" | ")}
@@ -327,11 +342,14 @@ function modernEnTemplate(c: ResumeContent): string {
   const accent = "#0369a1";
 
   sections.push(`
-    <div style="margin-bottom:20px;padding-left:16px;border-left:4px solid ${accent};">
-      <h1 style="margin:0;font-size:26px;font-weight:700;color:#0f172a;letter-spacing:-0.5px;">${esc(b.name)}</h1>
-      <p style="margin:6px 0 0;font-size:12px;color:#64748b;">
-        ${[b.email, b.phone, b.location, b.website, b.linkedin, b.github].filter(Boolean).map(esc).join(" · ")}
-      </p>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+      ${b.avatar ? avatarImg(b.avatar, 80, "flex-shrink:0;", b.avatarStyle) : ""}
+      <div style="padding-left:16px;border-left:4px solid ${accent};">
+        <h1 style="margin:0;font-size:26px;font-weight:700;color:#0f172a;letter-spacing:-0.5px;">${esc(b.name)}</h1>
+        <p style="margin:6px 0 0;font-size:12px;color:#64748b;">
+          ${[b.email, b.phone, b.location, b.website, b.linkedin, b.github].filter(Boolean).map(esc).join(" · ")}
+        </p>
+      </div>
     </div>
   `);
 
@@ -440,6 +458,7 @@ function elegantCnTemplate(c: ResumeContent): string {
 
   sections.push(`
     <div style="text-align:center;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid ${border};">
+      ${b.avatar ? `<div style="margin-bottom:12px;">${avatarImg(b.avatar, 96, "display:inline-block;border:2px solid " + border + ";", b.avatarStyle)}</div>` : ""}
       <h1 style="margin:0;font-size:24px;font-weight:normal;letter-spacing:4px;color:#2c2c2c;">${esc(b.name)}</h1>
       <p style="margin:10px 0 0;font-size:12px;color:#666;letter-spacing:1px;">
         ${[b.email, b.phone, b.location, b.website, b.github, b.linkedin].filter(Boolean).map(esc).join(" ｜ ")}
@@ -550,9 +569,9 @@ function sidebarTemplate(c: ResumeContent): string {
   const sidebarSections: string[] = [];
   const mainSections: string[] = [];
   const dark = "#1e293b";
-  const light = "#f8fafc";
 
   sidebarSections.push(`
+    ${b.avatar ? `<div style="text-align:center;margin-bottom:12px;">${avatarImg(b.avatar, 100, "border:3px solid #475569;", b.avatarStyle)}</div>` : ""}
     <h1 style="margin:0 0 12px;font-size:20px;font-weight:700;color:#fff;letter-spacing:1px;">${esc(b.name)}</h1>
     <div style="font-size:11px;color:#94a3b8;line-height:2;">
       ${b.email ? `<div>✉ ${esc(b.email)}</div>` : ""}
@@ -690,11 +709,14 @@ function compactTemplate(c: ResumeContent): string {
   const sections: string[] = [];
 
   sections.push(`
-    <div style="margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #111;">
-      <h1 style="margin:0;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:2px;">${esc(b.name)}</h1>
-      <p style="margin:3px 0 0;font-size:10px;color:#555;">
-        ${[b.email, b.phone, b.location, b.website, b.github, b.linkedin].filter(Boolean).map(esc).join(" · ")}
-      </p>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #111;">
+      ${b.avatar ? avatarImg(b.avatar, 64, "flex-shrink:0;", b.avatarStyle) : ""}
+      <div>
+        <h1 style="margin:0;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:2px;">${esc(b.name)}</h1>
+        <p style="margin:3px 0 0;font-size:10px;color:#555;">
+          ${[b.email, b.phone, b.location, b.website, b.github, b.linkedin].filter(Boolean).map(esc).join(" · ")}
+        </p>
+      </div>
     </div>
   `);
 
@@ -823,6 +845,31 @@ function wrapPage(body: string): string {
     body { padding: 10mm; }
   }
 </style></head><body>${body}</body></html>`;
+}
+
+function avatarImg(
+  avatar: string,
+  size: number,
+  extra = "",
+  style?: { shape?: string; scale?: number; offsetX?: number; offsetY?: number },
+): string {
+  if (!avatar) return "";
+  const s = style || {};
+  const shape = s.shape || "circle";
+  const scale = s.scale ?? 1;
+  const offsetX = s.offsetX ?? 0;
+  const offsetY = s.offsetY ?? 0;
+
+  let borderRadius = "50%";
+  if (shape === "square") borderRadius = "0";
+  else if (shape === "rounded") borderRadius = "12px";
+  const imgSize = size * scale;
+  const tx = offsetX * size / 100;
+  const ty = offsetY * size / 100;
+
+  return `<div style="width:${size}px;height:${size}px;border-radius:${borderRadius};overflow:hidden;position:relative;${extra}">` +
+    `<img src="${esc(avatar)}" alt="" style="width:${imgSize}px;height:${imgSize}px;object-fit:cover;position:absolute;top:50%;left:50%;transform:translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px));" />` +
+    `</div>`;
 }
 
 function esc(s: string | undefined | null): string {

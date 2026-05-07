@@ -10,6 +10,7 @@ export const sampleResumeContent: ResumeContent = {
     github: "github.com/zhangming",
     linkedin: "linkedin.com/in/zhangming",
     avatar: "",
+    avatarStyle: { shape: "circle", scale: 1, offsetX: 0, offsetY: 0 },
   },
   summary: "拥有 5 年以上全栈开发经验的资深软件工程师，擅长 React、Node.js 和云原生技术。在多个大型项目中主导技术架构设计，具备优秀的团队协作和问题解决能力。",
   education: [

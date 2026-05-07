@@ -43,6 +43,9 @@ model Resume {
   versions     ResumeVersion[]
 
   @@index([userId])
+  @@index([status])
+  @@index([userId, status])
+  @@index([updatedAt])
   @@map("resumes")
 }
 
@@ -63,6 +66,7 @@ model ResumeTemplate {
   resumes      Resume[]
 
   @@index([userId])
+  @@index([isBuiltin])
   @@map("resume_templates")
 }
 
@@ -99,6 +103,7 @@ model ApiKey {
 
   @@index([userId])
   @@index([keyHash])
+  @@index([status])
   @@map("api_keys")
 }
 
@@ -138,6 +143,7 @@ model ResumeVersion {
   user        User     @relation(fields: [userId], references: [id])
 
   @@index([resumeId])
+  @@index([resumeId, createdAt])
   @@map("resume_versions")
 }
 

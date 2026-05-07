@@ -33,6 +33,7 @@ export default function LoginPage() {
         return;
       }
       router.push("/dashboard");
+      router.refresh();
     } catch {
       setError(t("networkError"));
     } finally {

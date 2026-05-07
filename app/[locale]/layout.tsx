@@ -5,6 +5,7 @@ import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { getAuthUser } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "CareerFlow - Resume Manager",
@@ -25,12 +26,14 @@ export default async function LocaleLayout({
   }
 
   const messages = await getMessages();
+  const authUser = await getAuthUser();
+  const user = authUser ? { id: authUser.userId, email: authUser.email, role: authUser.role } : null;
 
   return (
     <html lang={locale}>
       <body className="flex min-h-screen flex-col bg-[var(--background)] text-[var(--foreground)] antialiased">
         <NextIntlClientProvider messages={messages}>
-          <Header />
+          <Header user={user} />
           <div className="flex-1">{children}</div>
           <Footer />
         </NextIntlClientProvider>

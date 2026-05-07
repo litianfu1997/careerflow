@@ -2,31 +2,24 @@
 
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "./language-switcher";
 
-type NavUser = { id: string; email: string; nickname: string | null; role: string };
+type NavUser = { id: string; email: string; nickname?: string | null; role: string };
 
-export function Header() {
+export function Header({ user: initialUser }: Readonly<{ user?: NavUser | null }>) {
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations("header");
-  const [user, setUser] = useState<NavUser | null>(null);
+  const user = initialUser ?? null;
   const isWorkbenchPage =
     /^\/resumes\/[^/]+\/(edit|preview)$/.test(pathname) ||
     pathname === "/templates/new" ||
     /^\/templates\/[^/]+\/(edit|preview)$/.test(pathname);
 
-  useEffect(() => {
-    fetch("/api/auth/me")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => d?.user && setUser(d.user))
-      .catch(() => {});
-  }, []);
-
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
     router.push("/login");
+    router.refresh();
   }
 
   return (

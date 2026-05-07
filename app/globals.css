@@ -94,10 +94,12 @@ body {
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
+  will-change: transform;
 }
 
 .animate-float-delayed {
   animation: float 8s ease-in-out 2s infinite;
+  will-change: transform;
 }
 
 .animate-fade-in-up {
@@ -107,6 +109,15 @@ body {
 .animate-gradient-shift {
   background-size: 200% 200%;
   animation: gradient-shift 4s ease infinite;
+  will-change: background-position;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-float-delayed,
+  .animate-gradient-shift {
+    animation: none;
+  }
 }
 
 @keyframes loading-pulse {

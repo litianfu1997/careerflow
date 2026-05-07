@@ -6,7 +6,11 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { CodeEditor } from "@/components/code-editor";
+import dynamic from "next/dynamic";
+const CodeEditor = dynamic(
+  () => import("@/components/code-editor").then((mod) => mod.CodeEditor),
+  { ssr: false, loading: () => <div className="h-[200px] animate-pulse rounded bg-[var(--muted)]" /> },
+);
 import { DraggablePreviewScroll } from "@/components/draggable-preview-scroll";
 import { Loader2 } from "lucide-react";
 import { LoadingPage } from "@/components/loading-page";

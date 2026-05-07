@@ -29,8 +29,11 @@ export async function PUT(
   if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const resume = await prisma.resume.findUnique({ where: { id } });
-  if (!resume || resume.userId !== auth.userId) {
+  const ownership = await prisma.resume.findUnique({
+    where: { id },
+    select: { userId: true },
+  });
+  if (!ownership || ownership.userId !== auth.userId) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
@@ -58,8 +61,11 @@ export async function DELETE(
   if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const resume = await prisma.resume.findUnique({ where: { id } });
-  if (!resume || resume.userId !== auth.userId) {
+  const ownership = await prisma.resume.findUnique({
+    where: { id },
+    select: { userId: true },
+  });
+  if (!ownership || ownership.userId !== auth.userId) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 

@@ -12,7 +12,20 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  devIndicator: false,
+  compress: true,
+  poweredByHeader: false,
+  images: {
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 60,
+  },
+  experimental: {
+    optimizePackageImports: [
+      "lucide-react",
+      "@codemirror/lang-html",
+      "@codemirror/lang-css",
+      "@codemirror/theme-one-dark",
+    ],
+  },
 };
 
 export default withNextIntl(nextConfig);
