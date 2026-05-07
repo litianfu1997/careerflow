@@ -5,21 +5,53 @@ function esc(s: string | undefined | null): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
+function buildAvatarHtml(
+  avatar: string, size: number, extra: string,
+  style?: { shape?: string; scale?: number; offsetX?: number; offsetY?: number },
+): string {
+  if (!avatar) return "";
+  const s = style || {};
+  const shape = s.shape || "circle";
+  const scale = s.scale ?? 1;
+  const offsetX = s.offsetX ?? 0;
+  const offsetY = s.offsetY ?? 0;
+  let borderRadius = "50%";
+  if (shape === "square") borderRadius = "0";
+  else if (shape === "rounded") borderRadius = "12px";
+  const imgSize = size * scale;
+  const tx = offsetX * size / 100;
+  const ty = offsetY * size / 100;
+  return `<div style="width:${size}px;height:${size}px;border-radius:${borderRadius};overflow:hidden;position:relative;${extra}">` +
+    `<img src="${esc(avatar)}" alt="" style="width:${imgSize}px;height:${imgSize}px;object-fit:cover;position:absolute;top:50%;left:50%;transform:translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px));" />` +
+    `</div>`;
+}
+
 export function renderSections(c: ResumeContent): Record<string, string> {
   const b = c.basic;
   const sections: Record<string, string> = {};
 
-  sections.header = [b.name, b.email, b.phone, b.location, b.website, b.github, b.linkedin]
-    .some(Boolean)
-    ? `
+  const hasContact = [b.name, b.email, b.phone, b.location, b.website, b.github, b.linkedin, b.avatar].some(Boolean);
+
+  const avatarHtml = b.avatar
+    ? buildAvatarHtml(b.avatar, 100, "display:inline-block;", b.avatarStyle)
+    : "";
+  sections.avatar = avatarHtml;
+
+  const avatarBlock = b.avatar ? `<div style="margin-bottom:12px;">${avatarHtml}</div>` : "";
+
+  if (hasContact) {
+    sections.header = `
       <div style="text-align:center;margin-bottom:20px;">
+        ${avatarBlock}
         <h1 style="margin:0;font-size:24px;font-weight:bold;">${esc(b.name)}</h1>
         <p style="margin:4px 0 0;color:#666;font-size:13px;">
           ${[b.email, b.phone, b.location, b.website, b.github, b.linkedin].filter(Boolean).map(esc).join(" | ")}
         </p>
       </div>
-    `
-    : "";
+    `;
+  } else {
+    sections.header = "";
+  }
 
   sections.summary = c.summary
     ? `<div style="margin-bottom:14px;"><h2 style="font-size:15px;font-weight:bold;margin:0 0 6px;padding-bottom:4px;border-bottom:1px solid #333;color:#333;">Personal Summary</h2><p style="margin:0;font-size:13px;line-height:1.6;white-space:pre-wrap;">${esc(c.summary)}</p></div>`

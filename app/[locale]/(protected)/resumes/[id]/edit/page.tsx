@@ -6,13 +6,6 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import type {
   ResumeContent,
-  EducationItem,
-  WorkExperienceItem,
-  ProjectItem,
-  SkillCategory,
-  CertificateItem,
-  OpenSourceItem,
-  CustomSectionItem,
 } from "@/lib/resume-schema";
 import { defaultResumeContent } from "@/lib/resume-schema";
 
@@ -23,6 +16,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Trash2, ArrowUp, ArrowDown, Save, Eye, FileDown, FileText, FileCode, ZoomIn, ZoomOut, Maximize } from "lucide-react";
 import { LoadingPage } from "@/components/loading-page";
 import { DraggablePreviewScroll } from "@/components/draggable-preview-scroll";
+import AvatarUpload from "@/components/avatar-upload";
+import type { AvatarStyle } from "@/lib/resume-schema";
 
 type Section = "basic" | "summary" | "education" | "workExperience" | "projects" | "skills" | "certificates" | "openSource" | "customSections";
 
@@ -303,12 +298,18 @@ const BasicForm = React.memo(function BasicForm({ content, updateContent }: { co
       setErrors((prev) => ({ ...prev, [key]: t("fields.invalidUrl") }));
     }
   }
+  function setAvatarStyle(style: AvatarStyle) {
+    updateContent((p) => ({ ...p, basic: { ...p.basic, avatarStyle: style } }));
+  }
   const fields = ["name", "email", "phone", "location", "website", "github", "linkedin"];
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">{t("sections.basic")}</h2>
         <p className="text-sm text-[var(--muted-foreground)]">{t("descriptions.basic")}</p>
+      </div>
+      <div className="flex justify-center">
+        <AvatarUpload value={b.avatar} onChange={(url) => set("avatar", url)} avatarStyle={b.avatarStyle} onStyleChange={setAvatarStyle} />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         {fields.map((key) => {
@@ -321,7 +322,7 @@ const BasicForm = React.memo(function BasicForm({ content, updateContent }: { co
                 inputMode={cfg.inputMode as "tel" | "decimal" | "text" | undefined}
                 autoComplete={cfg.autoComplete}
                 placeholder={cfg.placeholderKey ? t(`fields.${cfg.placeholderKey}`) : undefined}
-                value={(b as Record<string, string>)[key] || ""}
+                value={((b as Record<string, unknown>)[key] as string) || ""}
                 onChange={(e) => set(key, e.target.value)}
                 onBlur={(e) => validate(key, e.target.value)}
                 className={errors[key] ? "border-red-500 focus-visible:ring-red-500" : ""}

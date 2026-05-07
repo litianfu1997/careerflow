@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+export const avatarStyleSchema = z.object({
+  shape: z.enum(["circle", "square", "rounded"]).default("circle"),
+  scale: z.number().min(1).max(3).default(1),
+  offsetX: z.number().min(-50).max(50).default(0),
+  offsetY: z.number().min(-50).max(50).default(0),
+}).default({});
+
 export const basicSchema = z.object({
   name: z.string().default(""),
   email: z.string().default(""),
@@ -9,6 +16,7 @@ export const basicSchema = z.object({
   github: z.string().default(""),
   linkedin: z.string().default(""),
   avatar: z.string().default(""),
+  avatarStyle: avatarStyleSchema,
 });
 
 export const summarySchema = z.string().default("");
@@ -86,6 +94,7 @@ export const resumeContentSchema = z.object({
 });
 
 export type ResumeContent = z.infer<typeof resumeContentSchema>;
+export type AvatarStyle = z.infer<typeof avatarStyleSchema>;
 export type EducationItem = z.infer<typeof educationItemSchema>;
 export type WorkExperienceItem = z.infer<typeof workExperienceItemSchema>;
 export type ProjectItem = z.infer<typeof projectItemSchema>;
@@ -99,6 +108,7 @@ export function defaultResumeContent(): ResumeContent {
     basic: {
       name: "", email: "", phone: "", location: "",
       website: "", github: "", linkedin: "", avatar: "",
+      avatarStyle: { shape: "circle", scale: 1, offsetX: 0, offsetY: 0 },
     },
     summary: "",
     education: [],
